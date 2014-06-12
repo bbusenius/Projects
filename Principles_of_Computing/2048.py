@@ -25,19 +25,21 @@ def merge(line):
     index = 0
     for tile in line:
         if tile != 0:
-            results[index] = tile
+            
+            if tile == results[index - 1]:
+                results[index - 1] = tile * 2
+                merged = True
+            else:
+                merged = False
+                results[index] = tile
             # Only advance the counter if it's not a 0
             index += 1
-
-    index = 0
-    merged = False
-    for num in range(1, len(results)):
-        if results[index] == results[index - 1] and merged == False:
-            results[index - 1] = results[index] * 2
-            results.pop(index)
+           
+    for number in range(len(results)):
+        if results[number] == 0:
+            results.pop(number)
             results.append(0)
-            merged = True
-        index += 1
+
     return results
 
 class TwentyFortyEight:
