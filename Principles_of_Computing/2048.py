@@ -51,6 +51,27 @@ class TwentyFortyEight:
         self._grid_width = grid_width
         self._grid = ''
 
+        # Create a dictionary of indicies for tiles in rows representing 
+        # the directions UP, DOWN, LEFT, and RIGHT. These are the uppermost,
+        # leftmost, rightmost and downmost coordinates on the grid.
+        self._up_index = {UP : []}
+        self._left_index = {LEFT : []}
+        self._right_index = {RIGHT : []}
+        self._down_index = {DOWN : []}
+
+        # Loop over the width and height of the grid and build the dictionaries
+        # of directional coordinates above.
+        for height_matrix in range(self._grid_height):
+            for width_matrix in range(self._grid_width):
+                if height_matrix == 0:
+                    self._up_index[UP].append((height_matrix, width_matrix))
+                if width_matrix < 1:
+                    self._left_index[LEFT].append((height_matrix, width_matrix))
+                if width_matrix == self._grid_width - 1:
+                    self._right_index[RIGHT].append((height_matrix, width_matrix))
+                if height_matrix == self._grid_height - 1:
+                    self._down_index[DOWN].append((height_matrix, width_matrix))
+
     def reset(self):
         """
         Reset the game so the grid is empty.
