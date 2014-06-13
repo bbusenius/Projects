@@ -28,16 +28,9 @@ def merge(line):
     # Loop over the line and put numbers that aren't 0 together in the results
     for tile in line:
         if tile != 0:
-            
-            if tile == results[index - 1]:
-                results[index - 1] = tile * 2
-                merged = True
-            else:
-                merged = False
-                results[index] = tile
+            results[index] = tile
             # Only advance the counter if it's not a 0
             index += 1
-<<<<<<< HEAD
     # Loop over the results and merge numbers
     for number in range(len(results)):
         if number > 0 and results[number] == results[number - 1]:
@@ -45,14 +38,6 @@ def merge(line):
             results.append(0)
             results.pop(number)
    
-=======
-           
-    for number in range(len(results)):
-        if results[number] == 0:
-            results.pop(number)
-            results.append(0)
-
->>>>>>> aca9b2c94e796ecb506d62c67b58f8d3941aa88d
     return results
 
 class TwentyFortyEight:
