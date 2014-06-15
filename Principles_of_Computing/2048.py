@@ -31,6 +31,7 @@ def merge(line):
             results[index] = tile
             # Only advance the counter if it's not a 0
             index += 1
+
     # Loop over the results and merge numbers
     for number in range(len(results)):
         if number > 0 and results[number] == results[number - 1]:
@@ -69,11 +70,14 @@ class TwentyFortyEight:
                 if height_matrix == self._grid_height - 1:
                     self._row_indices[DOWN].append((height_matrix, width_matrix))
 
+        # Initialize a game
+        self.reset()
+
     def reset(self):
         """
         Reset the game so the grid is empty.
         """
-        cells = [ [0 for col in range(self.get_grid_width())] for row in range(self.get_grid_height())]
+        cells = [ [0 for dummy_col in range(self.get_grid_width())] for dummy_row in range(self.get_grid_height())]
         self._grid = cells
         return cells
         
@@ -104,12 +108,12 @@ class TwentyFortyEight:
         Move all tiles in the given direction and add
         a new tile if any tiles moved.
         """
+        # Flag for notifing if the grid has been updated
+        is_grid_changed = False 
+
         for row in self._row_indices[direction]:
             # Empty list for storing tiles
-            temp = []
-    
-            # Flag for notifing if the grid has been updated
-            is_grid_changed = False 
+            temp = [] 
             
             # Append the first for of tiles to the list since we have them.
             temp.append(self.get_tile(row[0], row[1]))
@@ -119,14 +123,14 @@ class TwentyFortyEight:
 
             # Set a variable to decide whether we need to loop over 
             # the width or the height of the grid.
-            if len(self._row_indices[direction]) > self.get_grid_width():
+            if direction == 3 or direction == 4:
                 matrix = self.get_grid_width()
             else:
                 matrix = self.get_grid_height()
             
             # Loop over the grid by width or height.
             # Use the OFFSETS to move to the right place.
-            for grid_slice in range(0, matrix - 1): 
+            for dummy_grid_slice in range(0, matrix - 1): 
                 coordinates[0] += OFFSETS[direction][0]
                 coordinates[1] += OFFSETS[direction][1]
                 temp.append(self.get_tile(coordinates[0], coordinates[1]))
@@ -137,7 +141,7 @@ class TwentyFortyEight:
             # Reset the coordinates and loop over the grid again.
             # Read the new values from merged_tiles back into the grid.
             coordinates = list(row)
-            for grid_slice in range(matrix):
+            for dummy_grid_slice in range(matrix):
 
                 #See if any tiles hav changed
                 if self.get_tile(coordinates[0], coordinates[1]) != merged_tiles[0]:
@@ -147,8 +151,8 @@ class TwentyFortyEight:
                 coordinates[0] += OFFSETS[direction][0]
                 coordinates[1] += OFFSETS[direction][1]
 
-            if is_grid_changed:
-                self.new_tile() 
+        if is_grid_changed:
+            self.new_tile() 
 
     def get_empty_tiles(self):
         """
@@ -192,5 +196,5 @@ class TwentyFortyEight:
     
 #poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
 import poc_2048_testsuite
-poc_2048_testsuite.run_merge_test(merge)
+#poc_2048_testsuite.run_merge_test(merge)
 poc_2048_testsuite.run_test(TwentyFortyEight)
