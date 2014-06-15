@@ -98,12 +98,12 @@ def run_test(game_class):
     print(game6) 
 
     # Test7: Test a 1x1 grid
-    """game7 = game_class(1, 1) 
+    game7 = game_class(1, 1) 
     print "---Beginning Grid: Move Left---"
     print(game7)
     game7.move(3)
     print "---End Grid---"
-    print(game7) """
+    print(game7) 
 
     #Test8:
     game8 = game_class(6, 8) 
