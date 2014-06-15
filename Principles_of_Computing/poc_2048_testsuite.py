@@ -61,19 +61,20 @@ def run_test(game_class):
     suite.run_test(game3.reset(), [[0, 0, 0, 0, 0, 0, 0 ], [0, 0, 0, 0, 0, 0, 0]], "Test game3 reset()")  
 
     # Test 4: Test new_tile method 
-    game4 = game_class(3, 3)
+    game4 = game_class(5, 3)
     game4.reset()
-    game4.set_tile(0, 0, 8)
+    game4.set_tile(2, 0, 8)
     game4.set_tile(0, 1, 8)
-    game4.set_tile(0, 2, 8)
+    game4.set_tile(0, 2, 2)
     game4.set_tile(1, 0, 8)
     game4.set_tile(1, 1, 8)
     game4.set_tile(1, 2, 8)
     game4.new_tile()
     print(game4)
-    #suite.run_test(game4.get_tile(2, 2), 7, "Test game4 get_tile()")
-    #suite.run_test(game4.get_tile(1, 1), 0, "Test game4 get_tile()") 
-    #suite.run_test(game4.reset(), [[0, 0, 0], [0, 0, 0], [0, 0, 0]], "Test game4 reset()")  
+    game4.move(1)
+    print
+    print(game4)
+    #print game4.move(3)   
 
     # Report number of tests and failures
     suite.report_results()

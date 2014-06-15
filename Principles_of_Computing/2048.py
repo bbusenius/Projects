@@ -54,23 +54,20 @@ class TwentyFortyEight:
         # Create a dictionary of indicies for tiles in rows representing 
         # the directions UP, DOWN, LEFT, and RIGHT. These are the uppermost,
         # leftmost, rightmost and downmost coordinates on the grid.
-        self._up_index = {UP : []}
-        self._left_index = {LEFT : []}
-        self._right_index = {RIGHT : []}
-        self._down_index = {DOWN : []}
+        self._row_indices = {UP : [], LEFT : [], RIGHT : [], DOWN : []}
 
         # Loop over the width and height of the grid and build the dictionaries
         # of directional coordinates above.
         for height_matrix in range(self._grid_height):
             for width_matrix in range(self._grid_width):
                 if height_matrix == 0:
-                    self._up_index[UP].append((height_matrix, width_matrix))
+                    self._row_indices[UP].append((height_matrix, width_matrix))
                 if width_matrix < 1:
-                    self._left_index[LEFT].append((height_matrix, width_matrix))
+                    self._row_indices[LEFT].append((height_matrix, width_matrix))
                 if width_matrix == self._grid_width - 1:
-                    self._right_index[RIGHT].append((height_matrix, width_matrix))
+                    self._row_indices[RIGHT].append((height_matrix, width_matrix))
                 if height_matrix == self._grid_height - 1:
-                    self._down_index[DOWN].append((height_matrix, width_matrix))
+                    self._row_indices[DOWN].append((height_matrix, width_matrix))
 
     def reset(self):
         """
@@ -84,6 +81,7 @@ class TwentyFortyEight:
         """
         Return a string representation of the grid for debugging.
         """
+        #print self._grid
         string = ''
         for row in self._grid:
             string += str(row) + '\n'
@@ -106,8 +104,51 @@ class TwentyFortyEight:
         Move all tiles in the given direction and add
         a new tile if any tiles moved.
         """
-        # replace with your code
-        pass
+        for row in self._row_indices[direction]:
+            # Empty list for storing tiles
+            temp = []
+    
+            # Flag for notifing if the grid has been updated
+            is_grid_changed = False 
+            
+            # Append the first for of tiles to the list since we have them.
+            temp.append(self.get_tile(row[0], row[1]))
+
+            # Turn the coordinates into a more useable datatype.
+            coordinates = list(row)
+
+            # Set a variable to decide whether we need to loop over 
+            # the width or the height of the grid.
+            if len(self._row_indices[direction]) > self.get_grid_width():
+                matrix = self.get_grid_width()
+            else:
+                matrix = self.get_grid_height()
+            
+            # Loop over the grid by width or height.
+            # Use the OFFSETS to move to the right place.
+            for grid_slice in range(0, matrix - 1): 
+                coordinates[0] += OFFSETS[direction][0]
+                coordinates[1] += OFFSETS[direction][1]
+                temp.append(self.get_tile(coordinates[0], coordinates[1]))
+            
+            # Merge the tiles.
+            merged_tiles = merge(temp)
+
+            # Reset the coordinates and loop over the grid again.
+            # Read the new values from merged_tiles back into the grid.
+            coordinates = list(row)
+            for grid_slice in range(matrix):
+
+                #See if any tiles hav changed
+                if self.get_tile(coordinates[0], coordinates[1]) != merged_tiles[0]:
+                   is_grid_changed = True   
+
+                self.set_tile(coordinates[0], coordinates[1], merged_tiles.pop(0))
+                coordinates[0] += OFFSETS[direction][0]
+                coordinates[1] += OFFSETS[direction][1]
+
+            if is_grid_changed:
+                self.new_tile() 
 
     def get_empty_tiles(self):
         """
