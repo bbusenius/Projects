@@ -6,17 +6,13 @@ import poc_simpletest
 
 def run_test(Test_Class):
 
-    # print instruction
-    print "---------------------------------"
-    print "Testing Phase 1: ClikerState set up"
-    print "methods tested: __init__, __str__, get_cookies, get_cps, get_time, get_history"
+    # Test the initial state of ClickerState
+    print "Testing Phase 1: ClikerState initialization"
+    print "methods tested: __init__"
     print "---------------------------------"
     
-    # test ClickerState on initial state
     suite0 = poc_simpletest.TestSuite()    
     test_state0 = Test_Class()
-    
-    print "Initial State: \n", test_state0
     
     suite0.run_test(test_state0.get_cookies(), 0.0, "1. Initial amount of cookies:")
     suite0.run_test(test_state0.get_cps(), 1.0, "2. Initial cps:")
@@ -24,47 +20,39 @@ def run_test(Test_Class):
     suite0.run_test(test_state0.get_history(), [(0.0, None, 0.0, 0.0)], "4. Initial history:")
     suite0.report_results()
 
-    # print instruction
-    print "---------------------------------"
+    # Test the wait method
     print "Testing Phase 1: wait method"
-    print "Your __init__, __str__, get_cookies, get_cps, get_time, get_history need to be functional"
+    print "methods tested: wait"
     print "---------------------------------"
 
-    # test ClickerState on time_until    
     suite2 = poc_simpletest.TestSuite()    
+    test_state2 = Test_Class()
     
-    test_wait1 = Test_Class()
-    test_wait1.wait(0.0)
-    print "wait for 0 s \n", test_wait1
-    suite2.run_test(test_wait1.get_time(), 0.0, "1. time:")
-    suite2.run_test(test_wait1.get_cookies(), 0.0, "2. cookies")
-   
-    test_wait2 = Test_Class() 
-    test_wait2.wait(3.52)
-    print "wait for 3.52 s \n", test_wait2
-    suite2.run_test(test_wait2.get_time(), 3.52, "3. time:")
-    suite2.run_test(test_wait2.get_cookies(), 3.52, "4. cookies")
-   
-    test_wait3 = Test_Class() 
-    test_wait3.wait(1.48)
-    print "wait for another 1.48 s \n", test_wait3
-    suite2.run_test(test_wait3.get_time(), 1.48, "5. time:")
-    suite2.run_test(test_wait3.get_cookies(), 1.48, "6. cookies")
+    test_state2.wait(0.0)
+    print "wait for 0 s \n", test_state2
+    suite2.run_test(test_state2.get_time(), 0.0, "1. time:")
+    suite2.run_test(test_state2.get_cookies(), 0.0, "2. cookies")
+    
+    test_state2.wait(3.52)
+    print "wait for 3.52 s \n", test_state2
+    suite2.run_test(test_state2.get_time(), 3.52, "3. time:")
+    suite2.run_test(test_state2.get_cookies(), 3.52, "4. cookies")
+    
+    test_state2.wait(1.48)
+    print "wait for another 1.48 s \n", test_state2
+    suite2.run_test(test_state2.get_time(), 5, "5. time:")
+    suite2.run_test(test_state2.get_cookies(), 5, "6. cookies")
 
-    test_wait4 = Test_Class()
-    test_wait4.wait(-1.4)
-    print "wait for negative time -1.4 \n", test_wait4
-    suite2.run_test(test_wait4.get_time(), 0.0, "7. time:")
-    suite2.run_test(test_wait4.get_cookies(), 0.0, "8. cookies")
+    test_state2.wait(-1.4)
+    print "wait for negative time -1.4 \n", test_state2
+    suite2.run_test(test_state2.get_time(), 5, "7. time:")
+    suite2.run_test(test_state2.get_cookies(), 5, "8. cookies")
     suite2.report_results()
 
-    # print instruction
-    print "---------------------------------"
     print "Testing Phase 1: time_until method"
-    print "Your __init__, __str__, get_cookies, get_cps, get_time, get_history and wait need to be functional"
+    print "time_until method"
     print "---------------------------------"
-
-    # test ClickerState on time_until    
+ 
     suite1 = poc_simpletest.TestSuite()    
     test_state1 = Test_Class()
     
@@ -79,3 +67,31 @@ def run_test(Test_Class):
     suite1.run_test(test_state1.time_until(11.0), 1.0, "7. target is 11.0 when you had 10.0 cookies:")
     suite1.run_test(test_state1.time_until(19.24), 10.0, "8. target is 19.24 when you had 10.0 cookies:")
     suite1.report_results()
+
+    print "Testing Phase 1: buy_item"
+    print "buy_item" 
+    print "---------------------------------"
+
+    suite3 = poc_simpletest.TestSuite()    
+    test_state3 = Test_Class()
+    
+    test_state3.buy_item("Upgrade 1", 1.0, 1.0)
+    print "1. buying a upgrade with 0 current cookies \n", test_state3
+    suite3.run_test(test_state3.get_cookies(), 0.0, "1.1 current # of cookies should be zero: ")
+    suite3.run_test(test_state3.get_cps(), 1.0, "1.2 current cps should not change: ")
+    suite3.run_test(test_state3.get_history(), [(0.0, None, 0.0, 0.0)], "1.3 history should be default: ")
+    
+    test_state3.buy_item("Free upgrade", 0.0, 1.0)
+    print "2. buying a free upgrade that doesn't cost cookies \n", test_state3
+    suite3.run_test(test_state3.get_cookies(), 0.0, "2.1 current # of cookies should be zero: ")
+    suite3.run_test(test_state3.get_cps(), 2.0, "2.2 current cps should be increased: ")
+    suite3.run_test(test_state3.get_history(), [(0.0, None, 0.0, 0.0), (0.0, "Free upgrade", 0.0, 0.0)], "2.3 history should be updated: ")
+   
+    test_state3.wait(10.0)
+    test_state3.buy_item("Upgrade 1", 1.0, 1.0)
+    print "3. buying upgrade 1 again with 20 current cookies \n", test_state3
+    suite3.run_test(test_state3.get_cookies(), 19.0, "3.1 current # of cookies should be 19 ")
+    suite3.run_test(test_state3.get_cps(), 3.0, "3.2 current cps should be updated: ")
+    suite3.run_test(test_state3.get_history(), [(0.0, None, 0.0, 0.0), (0.0, "Free upgrade", 0.0, 0.0), (10.0, "Upgrade 1", 1.0, 20.0)], "3.3 history should be updated: ")
+    suite3.report_results()
+    
