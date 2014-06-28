@@ -8,11 +8,19 @@ import poc_ttt_provided as provided
 
 # Constants for Monte Carlo simulator
 # Change as desired
-NTRIALS = 1    # Number of trials to run
+NTRIALS = 500    # Number of trials to run
 MCMATCH = 1.0  # Score for squares played by the machine player
 MCOTHER = 1.0  # Score for squares played by the other player
 
-SCORES = []
+# Lookup by winner, tie, or empty in the dictionsry 
+# 1 is empty, 2 is oppoent, 3 is player, 4 is a tie
+# Within each dictionary lookup by the player who 
+# "owns" the square. 1 is empty, 2 is the opponent, 
+# 3 is the current player.
+SQUARE_SCORE = {1 : {3 : 0.0, 2 : 0.0, 1 : 0.0 },
+                2 : {3 : -MCMATCH, 2 : MCOTHER, 1 : 0.0},
+                3 : {3 : MCMATCH, 2 : -MCOTHER, 1 : 0.0},
+                4 : {3 : 0.0, 2 : 0.0, 1 : 0.0}}
     
 def mc_trial(board, player):
     """
@@ -27,13 +35,12 @@ def mc_trial(board, player):
     Returns:
         None (but alters the game state) 
     """
-    original_player = player
 
     # Get all empty sqares on the board 
     empty_squares = board.get_empty_squares()
 
     # Randomly select an empty square
-    for move in range(len(empty_squares)): 
+    for dummy_move in range(len(empty_squares)): 
         square = random.choice(empty_squares)
         
         # Player makes a move 
@@ -49,47 +56,7 @@ def mc_trial(board, player):
         if board.check_win(): 
             break
 
-    score_board(board, original_player) 
     return None
-
-def score_board(board, player):
-    """
-    Scores each square on a given board. 
-
-    Args:
-        board: object, a bord to score.
-
-        player: the player to score for
-
-    Returns: 
-        scores: a list of scores for each square in the board.
-    """
-    winner = board.check_win() 
-    print "WINNER:", winner
-    print board
-    scores = []
-    for row in range(board.get_dim()):
-        for col in range(board.get_dim()):
-            # Game is a tie or square is empty, score 0
-            if winner == 4 or board.square(row, col) == 1:
-                scores.append((row, col, 0))
-            # The player won the game
-            elif winner == player:
-                # The square belongs to the player 
-                if board.square(row, col) == player:
-                    scores.append((row, col, MCMATCH))
-                # The square belongs to the other player
-                elif board.square(row, col) == provided.switch_player(player):
-                    scores.append((row, col, -MCOTHER))
-            # The player lost the game
-            elif winner == provided.switch_player(player):
-                # The square belongs to the player 
-                if board.square(row, col) == player:
-                    scores.append((row, col, -MCMATCH))
-                 # The square belongs to the other player
-                elif board.square(row, col) == provided.switch_player(player):
-                    scores.append((row, col, MCOTHER))
-    print scores
 
 def mc_update_scores(scores, board, player):
     """
@@ -105,7 +72,15 @@ def mc_update_scores(scores, board, player):
     Return:
         None.
     """
-    pass
+    winner = board.check_win()
+    # Loop through the grid and update the scores grid by doing a dictionary lookup.
+    # Lookup by winner > player to get the correct score for each square.
+    for row in range(board.get_dim()):
+        for col in range(board.get_dim()):
+            player = board.square(row, col)
+            score = SQUARE_SCORE[winner][player] 
+            scores[row][col] += score
+    return scores
 
 def get_best_move(board, scores):
     """
@@ -118,9 +93,29 @@ def get_best_move(board, scores):
         scores: grid of scores
 
     Returns:
-        tuple, a randomly picked empty square with the maximum score.
+        tuple, a randomly picked empty square with the maximum score. 
+        Returns None if there aren't any empty squares left.
     """
-    pass
+    # Get all empty sqares on the board
+    empty_squares = board.get_empty_squares() 
+
+    # Find the highest score. 
+    highest_score = float('-inf')
+    for row in range(board.get_dim()):
+        for col in range(board.get_dim()):
+            coordinates = (row, col)
+            if coordinates in empty_squares and scores[row][col] > highest_score:
+                highest_score = scores[row][col]
+   
+    # Get the grid coordinates of all 
+    # squares with the highest score.
+    highest_scores = []
+    for row in range(board.get_dim()):
+        for col in range(board.get_dim()):
+            coordinates = (row, col)
+            if coordinates in empty_squares and scores[row][col] == highest_score:
+                highest_scores.append((row, col))
+    return random.choice(highest_scores)
 
 def mc_move(board, player, trials):
     """
@@ -136,7 +131,20 @@ def mc_move(board, player, trials):
     Returns:
         tuple, (row, column)
     """
-    pass
+    # Clone the board to use for monte carlo practice games 
+    # and setup a list of null scores. 
+    scores = [[0] * board.get_dim()] * board.get_dim()
+
+    # Leave the function if there is no next move
+    if board.check_win():
+        return None
+
+    for dummy_game in range(trials):
+        clone = board.clone()
+        mc_trial(clone, player)
+        mc_update_scores(scores, clone, player)
+    return get_best_move(board, scores)
+        
 
 # Test game with the console or the GUI.
 # Uncomment whichever you prefer.
@@ -145,5 +153,10 @@ def mc_move(board, player, trials):
 
 # provided.play_game(mc_move, NTRIALS, False)        
 # poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
-import monte_carlo_testsuite as test_ttt
-test_ttt.test_trial(mc_trial)
+#import monte_carlo_testsuite as test_ttt
+#test_ttt.test_trial(mc_trial)
+#test_ttt.test_update_scores(mc_update_scores, MCMATCH, MCOTHER)
+#test_ttt.test_best_move(get_best_move)
+
+import monte_carlo_testsuite2 as wopr
+wopr.test_mc_move(mc_move)

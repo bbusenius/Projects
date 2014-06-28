@@ -62,39 +62,44 @@ def test_update_scores(mc_update_scores, mcmatch, mcother):
 
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERX, [[2, 1, 3], [3, 2, 1], [2, 3, 2]])
+    print
     suite.run_test(scores,
                    [[mcmatch, 0.0, -mcother], [-mcother, mcmatch, 0.0],
                     [mcmatch, -mcother, mcmatch]],
                    "Test 1: X won, player is X")
-
+    print
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERO, [[2, 1, 3], [3, 2, 1], [2, 3, 2]])
+    print
     suite.run_test(scores,
                    [[mcmatch + mcother, 0.0, -mcother - mcmatch],
                     [-mcother - mcmatch, mcmatch + mcother, 0.0],
                     [mcmatch + mcother, -mcother - mcmatch,
                      mcmatch + mcother]],
                    "Test 2: Same game, X won, player is O")
-
+    print
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERX, [[2, 3, 2], [3, 3, 2], [3, 2, 3]])
+    print
     suite.run_test(scores,
                    [[mcmatch + mcother, 0.0, -mcother - mcmatch],
                     [-mcother - mcmatch, mcmatch + mcother, 0.0],
                     [mcmatch + mcother, -mcother - mcmatch,
                      mcmatch + mcother]],
                    "Test 3: Tied game")
-
+    print
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERX, [[1, 3, 2], [2, 3, 1], [1, 3, 2]])
+    print
     suite.run_test(scores,
                    [[mcmatch + mcother, mcother, -mcother - 2 * mcmatch],
                     [-mcother - 2 * mcmatch, mcmatch + 2 * mcother, 0.0],
                     [mcmatch + mcother, -mcmatch, mcother]],
                    "Test 4: O won, player is X")
-
+    print
     manual_scoring(mc_update_scores, mcmatch, mcother, scores,
                    provided.PLAYERO, [[1, 2, 2], [3, 3, 3], [3, 2, 2]])
+    print
     suite.run_test(scores,
                    [[mcmatch + mcother, 0.0, -2 * mcother - 2 * mcmatch],
                     [-mcother - mcmatch, 2 * mcmatch + 2 * mcother, mcmatch],
