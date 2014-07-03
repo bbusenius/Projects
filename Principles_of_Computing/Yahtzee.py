@@ -100,12 +100,27 @@ def strategy(hand, num_die_sides):
     Compute the hold that maximizes the expected value when the
     discarded dice are rolled.
 
-    hand: full yahtzee hand
+    hand: full yahtzee hand, tuple
     num_die_sides: number of sides on each die
 
     Returns a tuple where the first element is the expected score and
     the second element is a tuple of the dice to hold
     """
+    # 1. Get all of the possible holds for the hand.
+    holds = gen_all_holds(hand)
+
+    # 2. Loop over all the possible holds and calculate the expected 
+    # value (will need to compute held dice and free dice first).
+    for possible_hold in holds:
+        
+        free_dice = []
+        [free_dice.append(val) for val in list(hand) if val not in list(possible_hold)]
+        print "POSSIBLE HOLD", possible_hold
+        print "FREE DICE", free_dice
+        print 
+    # 3. Loop again, get all of the holds with the highest expected
+    # value and return them as a tuple (expected_value, (holds))
+
     return (0.0, ())
 
 
