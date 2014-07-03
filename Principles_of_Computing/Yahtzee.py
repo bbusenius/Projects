@@ -75,15 +75,23 @@ def gen_all_holds(hand):
 
     Returns a set of tuples, where each tuple is dice to hold
     """
-    mask = gen_all_sequences((0,1), len(hand))
-    #print "HAND", hand
-    #print "MASK", mask
-    #print 1 in mask
-    
-    for collection in list(hand):
-        print collection
+    # Generate a set of all possible bitmasks (binary combinations) for the 
+    # given length of the hand e.g. set([(0, 1), (1, 0), (0, 0), (1, 1)]) 
+    masks = gen_all_sequences((0,1), len(hand))
 
-    return set([()])
+    # Loop over the bitmasks and build a set of tuples
+    # Only add a number to the tuple if the bitmask shows a 1
+    retval = []
+    for sequence in masks:
+        temp = []
+        counter = 0
+        for bit in sequence:
+            if bit == 1:
+                temp.append(hand[counter])
+            counter += 1
+        retval.append(tuple(temp))
+
+    return set(retval)
 
 
 
