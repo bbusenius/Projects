@@ -6,7 +6,7 @@ Simplifications:  only allow discard and roll, only score against upper level
 # Used to increase the timeout, if necessary
 #import codeskulptor
 #codeskulptor.set_timeout(20)
-import collections, math
+from collections import Counter as count
 
 def gen_all_sequences(outcomes, length):
     """
@@ -43,10 +43,11 @@ def score(hand):
     Returns an integer score 
     """
     retval = 0
-    counter = collections.Counter(hand).most_common()
-    for item in counter:
-        if item[0] * item[1] > retval:
-            retval = item[0] * item[1]    
+    counter = count(hand).most_common()
+    if len(hand) > 0:
+        for item in counter:
+            if item[0] * item[1] > retval:
+                retval = item[0] * item[1]
     return retval
 
 
@@ -63,7 +64,7 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
     """
     scores = []
     possible_sequences = gen_all_sequences(range(1, num_die_sides + 1), num_free_dice)
-    [scores.append(score(held_dice + hand)) for hand in possible_sequences] 
+    dummy_values = [scores.append(score(held_dice + hand)) for hand in possible_sequences] 
     return average(scores)
 
 
@@ -109,38 +110,36 @@ def strategy(hand, num_die_sides):
     # 1. Get all of the possible holds for the hand.
     holds = gen_all_holds(hand)
 
-    # 2. Loop over all the possible holds and calculate the expected 
-    # value (will need to compute held dice and free dice first).
+    # 2. Loop over all possible holds and calculate the expected
+    ev_holds = []
     for possible_hold in holds:
-        
-        free_dice = []
-        [free_dice.append(val) for val in list(hand) if val not in list(possible_hold)]
-        print "POSSIBLE HOLD", possible_hold
-        print "FREE DICE", free_dice
-        print 
-    # 3. Loop again, get all of the holds with the highest expected
-    # value and return them as a tuple (expected_value, (holds))
-
-    return (0.0, ())
+        exp_value = expected_value(possible_hold, num_die_sides, len(hand) - len(possible_hold))
+        ev_holds.append([exp_value, possible_hold])
+     
+    # 3. Retun the hold with the highest expected value as a tuple with its 
+    # corresponding expected value as the first element in e.g.: (0.0, ())
+    return tuple(max(ev_holds))
 
 
 def run_example():
     """
     Compute the dice to hold and expected score for an example hand
     """
-    num_die_sides = 6
-    hand = (1, 1, 1, 5, 6)
-    hand_score, hold = strategy(hand, num_die_sides)
-    print "Best strategy for hand", hand, "is to hold", hold, "with expected score", hand_score
+    #num_die_sides = 6
+    #hand = (1, 1, 1, 5, 6)
+    #hand_score, hold = strategy(hand, num_die_sides)
+    #print "Best strategy for hand", hand, "is to hold", hold, "with expected score", hand_score
+    pass
     
-    
-run_example()
+#run_example()
 
 
-import poc_holds_testsuite
-poc_holds_testsuite.run_suite(gen_all_holds)
+#import poc_holds_testsuite
+#poc_holds_testsuite.run_suite(gen_all_holds)
                                        
 #import poc_yahtzee_testsuite as score_testsuite
-#score_testsuite.run_suite(score)
+#score_testsuite.run_score(score)
+#score_testsuite.run_ev(expected_value)
+#score_testsuite.run_strategy(strategy)
 #import  poc_yahtzee_testsuite as expected_value_testsuite
 #expected_value_testsuite.run_suite(expected_value)
