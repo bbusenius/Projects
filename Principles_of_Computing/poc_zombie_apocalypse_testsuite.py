@@ -55,15 +55,15 @@ def Zombie_Appocalypse_test():
     suite.run_test(hums, "(0, 2)", "Test 7.0, Zombie class, human method")
     
     # Test 8.0 - 8.1 Zombie class, compute_distance_field method
-    """a = mycode.Zombie(5, 5, obstacle_list = [(2,1), (2,3), (3,3)])
+    a = mycode.Zombie(5, 5, obstacle_list = [(2,1), (2,3), (3,3)])
     a.add_zombie(2,2)
     row2 = [3, 2, 1, 2, 3]
-    suite.run_test(a.compute_distance_field(ZOMBIE)[1], row2, "Test 8.0, Zombie class, compute_distance_field")"""
+    suite.run_test(a.compute_distance_field(ZOMBIE)[1], row2, "Test 8.0, Zombie class, compute_distance_field")
     
     # Test 8.1 Zombie class, compute_distance_field method
-    """a.add_zombie(0,0)
+    a.add_zombie(0,0)
     row2 = [1, 2, 1, 2, 3]
-    suite.run_test(a.compute_distance_field(ZOMBIE)[1], row2, "Test 8.1, Zombie class, compute_distance_field")"""
+    suite.run_test(a.compute_distance_field(ZOMBIE)[1], row2, "Test 8.1, Zombie class, compute_distance_field")
     
     # Test 9.0 Zombie class, move_humans
     """a = mycode.Zombie(5, 5, obstacle_list = [(1,1), (2,2)])
