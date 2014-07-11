@@ -145,7 +145,7 @@ class Zombie(poc_grid.Grid):
 
         # Setup distance_field as a list. Again the instructions for this were 
         # absolutely terrible so watchout here. 
-        distance_field = [ [ self.get_grid_width() * self.get_grid_height() for dummy_col in range(self.get_grid_width())] for dummy_row in range(self.get_grid_height())] 
+        distance_field = [[ self.get_grid_width() * self.get_grid_height() for dummy_col in range(self.get_grid_width())] for dummy_row in range(self.get_grid_height())] 
 
         # Create an empty queue for tracking humans or zombies.
         boundary = poc_queue.Queue()
@@ -161,7 +161,8 @@ class Zombie(poc_grid.Grid):
 
         ### End initialization ###
        
-        # Use a breadth-first search to compute the distance between humans and zombies.
+        # Use a breadth-first search to compute 
+        # the distance between humans and zombies.
         distance = 1
         while boundary.__len__() > 0:
             neighbor_cells = []
