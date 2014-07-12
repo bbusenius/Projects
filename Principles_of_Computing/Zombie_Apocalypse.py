@@ -163,17 +163,17 @@ class Zombie(poc_grid.Grid):
        
         # Use a breadth-first search to compute 
         # the distance between humans and zombies.
-        distance = 1
         while boundary.__len__() > 0:
             neighbor_cells = []
             current_cell = boundary.dequeue()
             neighbor_cells.extend(self.four_neighbors(current_cell[0], current_cell[1]))
+            # Distance is the position of the current cell + 1 (incrementing is not necessary)
+            distance = distance_field[current_cell[0]][current_cell[1]] + 1
             for neighbor_cell in neighbor_cells:
                 if visited.is_empty(neighbor_cell[0], neighbor_cell[1]) :
                     visited.set_full(neighbor_cell[0], neighbor_cell[1])
                     distance_field[neighbor_cell[0]][neighbor_cell[1]] = distance
                     boundary.enqueue(neighbor_cell)
-            distance += 1
         return distance_field 
 
     def move_humans(self, zombie_distance):
@@ -181,14 +181,42 @@ class Zombie(poc_grid.Grid):
         Function that moves humans away from zombies, diagonal moves
         are allowed
         """
-        pass
+        # 1. Set variables: victims (queue of humans being chased), distances (current
+        # distances between humans and zombies) current_cell, escape_routs, possible_move.
+        distances = self.compute_distance_field(HUMAN)
+        victims = poc_queue.Queue()
+        dummy_victims = [victims.enqueue(human) for human in self.get_entity_list(HUMAN)]
+
+        possible_moves = []
+        furthest = 0
+        while victims.__len__() > 0:
+            current_cell = victims.dequeue()
+            escape_routs = self.eight_neighbors(current_cell[0], current_cell[1])
+            # 2. Loop over escape_routs for each move and calculate the distance 
+            # between the escape_rout cells and zombie. If the distance between 
+            # the escape_rout cell is > than the current distance (zombie_distance)
+            # save the move into the possible_moves list.
+            for move in escape_routs:
+                if zombie_distance[move[0]][move[1]] < furthest:
+                    pass
+                elif zombie_distance[move[0]][move[1]] > distances[move[0]][move[1]]:
+                    possible_moves = [move]
+                    furthest = zombie_distance[move[0]][move[1]] 
+                elif zombie_distance[move[0]][move[1]] == possible_moves[0]:
+                    possible_moves.append(move)
+
+            # 3. Randomly choose one member of the possible_moves list and use it
+            # to update the self._human_list. 
+            choice = random.choice(possible_moves)    
+            self.add_human(choice[0], choice[1])
+            self._human_list.remove(current_cell)
     
     def move_zombies(self, human_distance):
         """
         Function that moves zombies towards humans, no diagonal moves
         are allowed
         """
-        pass
+        pass 
 
 # Start up gui for simulation - You will need to write some code above
 # before this will work without errors

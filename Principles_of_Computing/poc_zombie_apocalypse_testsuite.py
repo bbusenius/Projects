@@ -66,17 +66,17 @@ def Zombie_Appocalypse_test():
     suite.run_test(a.compute_distance_field(ZOMBIE)[1], row2, "Test 8.1, Zombie class, compute_distance_field")
     
     # Test 9.0 Zombie class, move_humans
-    """a = mycode.Zombie(5, 5, obstacle_list = [(1,1), (2,2)])
+    a = mycode.Zombie(5, 5, obstacle_list = [(1,1), (2,2)])
     a.add_zombie(0,0)
     a.add_zombie(4,4)
     a.add_human(0,1)
     a.add_human(3,2)
     a.move_humans(a.compute_distance_field(ZOMBIE))
-    suite.run_test(a._human_list, [(1, 2), (3, 1)], "Test 9.0 Zombie class, move_humans")"""
+    suite.run_test(a._human_list, [(1, 2), (3, 1)], "Test 9.0 Zombie class, move_humans")
     
     # Test 10.0 Zombie class, move_zombie
-    """a.move_zombies(a.compute_distance_field(HUMAN))
-    suite.run_test(a._zombie_list[0], (0, 1), "Test 10.0 Zombie class, move_zombie")"""
+    a.move_zombies(a.compute_distance_field(HUMAN))
+    suite.run_test(a._zombie_list[0], (0, 1), "Test 10.0 Zombie class, move_zombie")
         
     suite.report_results()
     
