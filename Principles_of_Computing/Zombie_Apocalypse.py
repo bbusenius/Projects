@@ -45,6 +45,30 @@ class Zombie(poc_grid.Grid):
         else:
             self._human_list = []
     
+
+    def __str__(self):
+        """
+        String representation of the game state.
+        H = human, Z = zombie, O = obstacle, E = zombie eating human
+        """
+        cells = [ [self._grid_width * self._grid_height for row in range(self._grid_height)] for col in range(self._grid_width)] 
+        for row, col in self.get_human_list():
+            cells[row][col] = "H"
+        for row, col in self.get_zombie_list():
+            if (row, col) in self.get_human_list():
+                cells[row][col] = "E"
+            else:
+                cells[row][col] = "Z"
+        for row, col in self.get_obstacle_list():
+            cells[row][col] = "O" 
+
+        string = str(cells) 
+        string = string.replace("[[", " [")
+        string = string.replace("]]", "]")
+        string = string.replace("],", "]\n")
+          
+        return string 
+ 
     def get_obstacle_list(self):
         """
         Return a list of obstacles.
@@ -169,54 +193,217 @@ class Zombie(poc_grid.Grid):
             neighbor_cells.extend(self.four_neighbors(current_cell[0], current_cell[1]))
             # Distance is the position of the current cell + 1 (incrementing is not necessary)
             distance = distance_field[current_cell[0]][current_cell[1]] + 1
-            for neighbor_cell in neighbor_cells:
-                if visited.is_empty(neighbor_cell[0], neighbor_cell[1]) :
-                    visited.set_full(neighbor_cell[0], neighbor_cell[1])
-                    distance_field[neighbor_cell[0]][neighbor_cell[1]] = distance
-                    boundary.enqueue(neighbor_cell)
+            for row, col in neighbor_cells:
+                # If there isn't an obstacle
+                # if self.is_empty(row, col):
+                if (row, col) not in self.get_obstacle_list():
+                    # If the cell hasn't been visited
+                    if visited.is_empty(row, col) :
+                        visited.set_full(row, col)
+                        distance_field[row][col] = distance
+                        boundary.enqueue((row, col))
         return distance_field 
+
+    
+    #def get_moves(self, distances, entity, row, col):
+        """
+        Method gets possible routs for zombies or humans.
+        Zombies can move 4 directions. Humans can move 8 directions.
+
+        Return:
+            list: of possible moves for zombies or humans. 
+        """
+        """routs = {HUMAN : [self.get_human_routs, self.eight_neighbors], 
+                 ZOMBIE: [self.get_zombie_routs, self.four_neighbors]}
+
+        return routs[entity][0](routs[entity][1](row, col), distances, (row, col))"""
+
+    
+    def get_human_routs(self, routs, distances, current_cell):
+        """
+        Args:
+            routs: tuple (row, cell), the neighbor cells to where
+            humans can move. Humans are allowed to move in 8 directions.
+
+            distances: grid list of lists. The calculated distances 
+print 
+            between humans and zombies.
+        """
+        current_distances = self.compute_distance_field(HUMAN)
+        possible_moves = [(float('-inf'), float('-inf'))]
+        furthest = float('-inf')
+
+        for row, col in routs:
+            if distances[row][col] < furthest:
+                pass
+            elif distances[row][col] > current_distances[row][col]:
+                possible_moves = [(row, col)]
+                furthest = distances[row][col]
+            elif distances[row][col] == possible_moves[0]:
+                possible_moves.append((row, col))
+        return possible_moves
+
+    
+    def get_zombie_routs(self, routs, distances, current_cell):
+        """
+        Args:
+            routs: tuple (row, cell), the neighbor cells to where
+            zombies can move. Zombies are allowed to move in 4 directions.
+
+            distances: grid list of lists. The calculated distances 
+            between humans and zombies.#
+        """
+        # Current distance to human
+        current_distances = self.compute_distance_field(ZOMBIE)
+        possible_moves = [(float('-inf'), float('-inf'))]
+        closest = float('inf')
+        for row, col in routs:
+            # If the distance is further than the current 
+            # possible closest move don't do anything
+            if distances[row][col] > closest:
+                pass
+            # If distance to the human is less than current 
+            # distance to the human, make this the possible move
+            elif distances[row][col] < current_distances[row][col]:
+                possible_moves = [(row, col)]
+                closest = distances[row][col]
+            # If distance to the human is the same as the current 
+            # the distance of the current possible move, add this 
+            # move to the list of possible moves as well
+            elif distances[row][col] == possible_moves[0]:
+                possible_moves.append((row, col))
+            # If there aren't any good moves, the zombie should
+            # stay in its current position
+            else:
+                possible_moves = [current_cell]
+    
+        # Return a list of possible moves
+        return possible_moves
+
+    
+    #def move_humans(self, zombie_distance):
+        """
+        Function that moves humans away from zombies, diagonal moves
+        are allowed
+        """
+        # 1. Set variables: victims (queue of humans being chased), distances (curor current_distances[row][col] == 0rent
+        # distances between humans and zombies) current_cell, escape_routs, possible_move.
+        """entities = poc_queue.Queue()
+        dummy_entities = [entities.enqueue(human) for human in self.get_entity_list(HUMAN)]
+
+        while entities.__len__() > 0:
+            current_cell = entities.dequeue()
+            moves = self.get_moves(zombie_distance, HUMAN, current_cell[0], current_cell[1])
+
+            # 3. Randomly choose one member of the possible_moves list and use it
+            # to update the self._human_list. 
+            choice = random.choice(moves)
+            self._human_list.remove(current_cell)
+            self.add_human(choice[0], choice[1])"""
+             
+    
+    #def move_zombies(self, human_distance):
+        """
+        Function that moves zombies towards humans, no diagonal moves
+        are allowed
+        """
+        # 1. Set variables: victims (queue of humans being chased), distances (current
+        # distances between humans and zombies) current_cell, escape_routs, possible_move.
+        """entities = poc_queue.Queue()
+        dummy_entities = [entities.enqueue(zombie) for zombie in self.get_entity_list(ZOMBIE)]
+
+        while entities.__len__() > 0:
+            current_cell = entities.dequeue()
+            moves = self.get_moves(human_distance, ZOMBIE, current_cell[0], current_cell[1])
+
+            # 3. Randomly choose one member of the possible_moves list and use it
+            # to update the self._zombie_list. 
+            choice = random.choice(moves)
+            self._zombie_list.remove(current_cell) 
+            self.add_zombie(choice[0], choice[1])"""
+
+
+    def get_move(self, distances, entity, current_cell):
+        """
+        Method gets possible routs for zombies or humans.
+        Zombies can move 4 directions. Humans can move 8 directions.
+
+        Return:
+            list: of possible moves for zombies or humans. 
+        """
+        def get_human_routs(neighbor_cells, distances, current_cell):
+            """
+            Gets a move for a human and updates the human list.
+            """
+            possible_moves = []
+            furthest = float('-inf')
+            for row, col in neighbor_cells:
+                neighbor_cell_distance = distances[row][col]
+                current_cell_distance = distances[current_cell[0]][current_cell[1]]
+                if neighbor_cell_distance > furthest and (row, col) not in self.get_obstacle_list():
+                    possible_moves = [(row, col)]
+                    furthest = neighbor_cell_distance
+
+            return random.choice(possible_moves)
+ 
+
+        def get_zombie_routs(neighbor_cells, distances, current_cell):#
+            """
+            Gets a move for a zombie and updates the zombie list.
+            """
+            possible_moves = []
+            closest = float('inf')
+            #print "DIST", distances
+            #print "OBS", self.get_obstacle_list()
+            #print "NEIGH", neighbor_cells 
+            #print "CURRENT CELL", current_cell      
+            for row, col in neighbor_cells:
+                neighbor_cell_distance = distances[row][col]
+                current_cell_distance = distances[current_cell[0]][current_cell[1]]
+                if neighbor_cell_distance < closest and (row, col) not in self.get_obstacle_list() and current_cell_distance != 0:
+                    possible_moves = [(row, col)]
+                    closest = neighbor_cell_distance
+                else:
+                    possible_moves = [current_cell]
+
+            return random.choice(possible_moves)
+ 
+        routs = {HUMAN : [get_human_routs, self.eight_neighbors], 
+                 ZOMBIE: [get_zombie_routs, self.four_neighbors]}
+
+        return routs[entity][0](routs[entity][1](current_cell[0], current_cell[1]), distances, current_cell)
+
 
     def move_humans(self, zombie_distance):
         """
         Function that moves humans away from zombies, diagonal moves
         are allowed
         """
-        # 1. Set variables: victims (queue of humans being chased), distances (current
-        # distances between humans and zombies) current_cell, escape_routs, possible_move.
-        distances = self.compute_distance_field(HUMAN)
-        victims = poc_queue.Queue()
-        dummy_victims = [victims.enqueue(human) for human in self.get_entity_list(HUMAN)]
-
-        possible_moves = []
-        furthest = 0
-        while victims.__len__() > 0:
-            current_cell = victims.dequeue()
-            escape_routs = self.eight_neighbors(current_cell[0], current_cell[1])
-            # 2. Loop over escape_routs for each move and calculate the distance 
-            # between the escape_rout cells and zombie. If the distance between 
-            # the escape_rout cell is > than the current distance (zombie_distance)
-            # save the move into the possible_moves list.
-            for move in escape_routs:
-                if zombie_distance[move[0]][move[1]] < furthest:
-                    pass
-                elif zombie_distance[move[0]][move[1]] > distances[move[0]][move[1]]:
-                    possible_moves = [move]
-                    furthest = zombie_distance[move[0]][move[1]] 
-                elif zombie_distance[move[0]][move[1]] == possible_moves[0]:
-                    possible_moves.append(move)
-
-            # 3. Randomly choose one member of the possible_moves list and use it
-            # to update the self._human_list. 
-            choice = random.choice(possible_moves)    
-            self.add_human(choice[0], choice[1])
-            self._human_list.remove(current_cell)
-    
+        humans = list(self.get_human_list())
+        for human in humans:
+            move = self.get_move(zombie_distance, HUMAN, human) 
+            self._human_list.remove((human))
+            self.add_human(move[0], move[1])
+ 
     def move_zombies(self, human_distance):
         """
         Function that moves zombies towards humans, no diagonal moves
         are allowed
         """
-        pass 
+        #print self.__str__()
+        zombies = self.get_zombie_list()
+        for zombie in zombies:
+            move = self.get_move(human_distance, ZOMBIE, zombie) 
+            self._zombie_list.remove((zombie))
+            self.add_zombie(move[0], move[1])
+        
+        #print self.__str__()
+
+
+#import poc_zombie_apocalypse_testsuite2 as test
+#test.phase1_test(Zombie)
+#test.phase2_test(Zombie)
+#test.phase3_test(Zombie)
 
 # Start up gui for simulation - You will need to write some code above
 # before this will work without errors
