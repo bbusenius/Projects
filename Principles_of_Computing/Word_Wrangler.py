@@ -49,7 +49,10 @@ def merge(list1, list2):
     are in either list1 and list2.
 
     This function can be iterative.
-    """ 
+    """
+    #Make copies of the list arguments 
+    list1 = list(list1)
+    list2 = list(list2) 
     # Use numbers to compare. 
     # We'll have to assign number values to letters later.
     list3 = []
@@ -99,18 +102,29 @@ def gen_all_strings(word):
     This function should be recursive.
     """
     # Base case
-    if len(word) < 2:
-        return word
+    if word == '':
+        return ['']
     # Recursive case
     else:
+        # Split the first letter and the rest of 
+        # the word into seperate strings. 
         first = word[0]
         rest = word[1:]
+        # Recurstion.
         rest_strings = gen_all_strings(rest)
-        retval = []
+        temp = []
         for string in rest_strings:
-            for num in range(len(string)):
-                pass
-    return []
+            # Len + 1 because we need to append the first variable 
+            # to the end of the last string (I think)  
+            for indx in range(len(string) + 1):
+                # Make new strings by inserting the first character 
+                # at all positions in the original (rest) string and
+                # append the new strings to the temp list.
+                new_string = string[:indx] + first + string[indx:]
+                temp.append(new_string)
+        # Concatonate rest_strings and the temp list
+        rest_strings += temp
+        return rest_strings
 
 # Function to load words from a file
 
@@ -120,7 +134,12 @@ def load_words(filename):
 
     Returns a list of strings.
     """
-    return []
+    url = codeskulptor.file2url(filename)
+    netfile = urllib2.urlopen(url)
+    retval = []
+    for line in netfile.readlines():
+        retval.append(line[:-1])
+    return retval
 
 def run():
     """
@@ -132,11 +151,11 @@ def run():
                                      gen_all_strings)
     provided.run_game(wrangler)
 
-import poc_word_wrangler_testsuite as testsuite
-testsuite.run_test1(remove_duplicates)
-testsuite.run_test2(intersect)
-testsuite.run_test3(merge)
-testsuite.run_test4(merge_sort)
+#import poc_word_wrangler_testsuite as testsuite
+#testsuite.run_test1(remove_duplicates)
+#testsuite.run_test2(intersect)
+#testsuite.run_test3(merge)
+#testsuite.run_test4(merge_sort)
 #testsuite.run_test5(gen_all_strings)
 #testsuite.run_all(remove_duplicates, intersect, merge, merge_sort, gen_all_strings)
 
