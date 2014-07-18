@@ -73,7 +73,18 @@ def merge_sort(list1):
 
     This function should be recursive.
     """
-    return []
+    # Split the list into two
+    split_point = len(list1) / 2
+    lista = list1[:split_point]
+    listb = list1[split_point:]
+
+    # Base case
+    if len(list1) < 2:
+        return list1
+    # Recursive case
+    else:
+        return merge(merge_sort(lista), merge_sort(listb)) 
+
 
 # Function to generate all strings for the word wrangler game
 
@@ -87,6 +98,18 @@ def gen_all_strings(word):
 
     This function should be recursive.
     """
+    # Base case
+    if len(word) < 2:
+        return word
+    # Recursive case
+    else:
+        first = word[0]
+        rest = word[1:]
+        rest_strings = gen_all_strings(rest)
+        retval = []
+        for string in rest_strings:
+            for num in range(len(string)):
+                pass
     return []
 
 # Function to load words from a file
@@ -113,7 +136,7 @@ import poc_word_wrangler_testsuite as testsuite
 testsuite.run_test1(remove_duplicates)
 testsuite.run_test2(intersect)
 testsuite.run_test3(merge)
-#testsuite.run_test4(merge_sort)
+testsuite.run_test4(merge_sort)
 #testsuite.run_test5(gen_all_strings)
 #testsuite.run_all(remove_duplicates, intersect, merge, merge_sort, gen_all_strings)
 

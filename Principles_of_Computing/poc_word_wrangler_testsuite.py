@@ -77,7 +77,7 @@ def run_test4(merge_sort):
     suite.run_test(merge_sort([9, 8, 7, 4, 3, 2]), [2, 3, 4, 7, 8, 9], "Test #5: List in reverse order")
     suite.run_test(merge_sort([1, 2, 3, 4, 5]), [1, 2, 3, 4, 5], "Test #6: List in order")
     suite.run_test(merge_sort([5, 2, 6, 3, 4, 8, 1, 9]), [1, 2, 3, 4, 5, 6, 8, 9], "Test #7: Random even length list")
-    suite.run_test(merge_sort([5, 2, 15, 6, 3, 4, 8, 1, 9]), [1, 2, 3, 4, 5, 6, 8, 9, 15], "Test #7: Random odd length list")
+    suite.run_test(merge_sort([5, 2, 15, 6, 3, 4, 8, 1, 9]), [1, 2, 3, 4, 5, 6, 8, 9, 15], "Test #8: Random odd length list")
     
     suite.report_results()
 
