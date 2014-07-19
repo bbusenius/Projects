@@ -64,7 +64,7 @@ def merge(list1, list2):
         else:
             item = list2.pop(0)
             list3.append(item)
-    # Add anything emaining from the longer list
+    # Add anything remaining from the longer list
     list3.extend(list1 if list1 else list2)
     return list3
                 
