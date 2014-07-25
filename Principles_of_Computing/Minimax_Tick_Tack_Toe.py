@@ -2,12 +2,12 @@
 Mini-max Tic-Tac-Toe Player
 """
 
-import poc_ttt_gui
+#import poc_ttt_gui
 import poc_ttt_provided as provided
 
 # Set timeout, as mini-max can take a long time
-import codeskulptor
-codeskulptor.set_timeout(60)
+#import codeskulptor
+#codeskulptor.set_timeout(60)
 
 # SCORING VALUES - DO NOT MODIFY
 SCORES = {provided.PLAYERX: 1,
@@ -21,19 +21,55 @@ def mm_move(board, player):
     Returns a tuple with two elements.  The first element is the score
     of the given board and the second element is the desired move as a
     tuple, (row, col).
-    """
-    # 1. Look at the current game state and get the possible moves.
+    """ 
+    # Define the minimizing and maximizing players
+    max_player = provided.PLAYERX
+    min_player = provided.PLAYERO  
 
-    # 2. Loop over the possible moves. For each possible move implement 
-    # a depth first search using recursion.
+    # Base case
+    winner = board.check_win()
+    if winner != None:
+        score = SCORES[winner]
+        return score, (-1, -1)
+    # Recursive case
+    else: 
 
-    # 3. Score the final board for each possible move.
+        best_scores = []
+        best_moves =  []
 
-    # 4. Return the score and move with the minimum or maximum value 
-    # depending on which player's turn it is. If the game is over and
-    # there aren't anymore moves, the final move should be (-1, -1) as
-    # a convention.  
-    return 0, (-1, -1)
+        # 1. Look at the current game state and get the possible moves.
+        moves = board.get_empty_squares()
+
+        # 2. Loop over the possible moves. For each possible move implement 
+        # a depth first search using recursion.
+        for move in moves:
+            board = board.clone()
+            board.move(move[0], move[1], player)
+
+            # Call function recursively 
+            values = mm_move(board, player)
+
+            best_scores.append(values[0])
+            best_moves.append(move)
+
+        
+        if player == max_player:
+            best_score = max(best_scores)
+            best_move = best_moves[best_scores.index(best_score)]
+        elif player == min_player:
+            best_score = min(best_scores)
+            best_move = best_moves[best_scores.index(best_score)]
+
+
+        # Player that has the next turn
+        player = provided.switch_player(player) 
+
+        # 4. Return the score and move with the minimum or maximum value 
+        # depending on which player's turn it is. If the game is over and
+        # there aren't anymore moves, the final move should be (-1, -1) as
+        # a convention.
+        #print "TEST", best_score, best_move 
+        return best_score, best_move 
 
 def move_wrapper(board, player, trials):
     """
