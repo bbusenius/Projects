@@ -21,54 +21,65 @@ def mm_move(board, player):
     Returns a tuple with two elements.  The first element is the score
     of the given board and the second element is the desired move as a
     tuple, (row, col).
-    """ 
-    # Define the minimizing and maximizing players
-    max_player = provided.PLAYERX
-    min_player = provided.PLAYERO  
-
+    """  
     # Base case
     winner = board.check_win()
     if winner != None:
-        score = SCORES[winner]
-        return score, (-1, -1)
+        return SCORES[winner], (-1, -1)
     # Recursive case
-    else: 
+    else:
 
-        best_scores = []
-        best_moves =  []
+        # Initialize best score and best move variables
+        # based on which player it is
+        if player == provided.PLAYERX:
+            best_score = float("-inf")
+        elif player == provided.PLAYERO:
+            best_score = float("inf")
+        best_move =  (-1, -1)
 
         # 1. Look at the current game state and get the possible moves.
-        moves = board.get_empty_squares()
-
         # 2. Loop over the possible moves. For each possible move implement 
         # a depth first search using recursion.
-        for move in moves:
-            board = board.clone()
-            board.move(move[0], move[1], player)
+        for move in board.get_empty_squares():
+            clone = board.clone()
+            clone.move(move[0], move[1], player)
 
             # Call function recursively 
-            values = mm_move(board, player)
+            values = mm_move(clone, provided.switch_player(player))
+       
+            # -------- Non-math solution --------            
 
-            best_scores.append(values[0])
-            best_moves.append(move)
+            # Maximizing player
+            #if player == provided.PLAYERX:
+            #    if values[0] == SCORES[provided.PLAYERX]:
+            #        return values[0], move
+            #    if values[0] > best_score:
+            #        best_score = values[0]
+            #        best_move = move
+            # Minimizing player
+            #elif player == provided.PLAYERO:
+            #    if values[0] == SCORES[provided.PLAYERO]:
+            #        return values[0], move
+            #    if values[0] < best_score:
+            #        best_score = values[0]
+            #        best_move = move
 
-        
-        if player == max_player:
-            best_score = max(best_scores)
-            best_move = best_moves[best_scores.index(best_score)]
-        elif player == min_player:
-            best_score = min(best_scores)
-            best_move = best_moves[best_scores.index(best_score)]
 
+            # -------- Funky math solution uning negamax --------
 
-        # Player that has the next turn
-        player = provided.switch_player(player) 
+            # Exit immediately if the next score is a winning score.
+            # We can't do any better than this.
+            if SCORES[player] == values[0]:
+                return values[0], move
+
+            # Update the best score and best move variables
+            if values[0] * SCORES[player] > best_score * SCORES[player]:
+                best_score = values[0]
+                best_move = move
 
         # 4. Return the score and move with the minimum or maximum value 
         # depending on which player's turn it is. If the game is over and
-        # there aren't anymore moves, the final move should be (-1, -1) as
-        # a convention.
-        #print "TEST", best_score, best_move 
+        # there aren't anymore moves, the final move should be (-1, -1).
         return best_score, best_move 
 
 def move_wrapper(board, player, trials):
@@ -85,7 +96,7 @@ def move_wrapper(board, player, trials):
 # Both should be commented out when you submit for
 # testing to save time.
 
-# provided.play_game(move_wrapper, 1, False)        
+provided.play_game(move_wrapper, 1, False)        
 # poc_ttt_gui.run_gui(3, provided.PLAYERO, move_wrapper, 1, False)
 
 import poc_ttt_minimax_testsuite as unit_test
