@@ -14,6 +14,9 @@ SCORES = {provided.PLAYERX: 1,
           provided.DRAW: 0,
           provided.PLAYERO: -1}
 
+# Lookup dictionary for memoization
+LOOKUP = {}
+
 def mm_move(board, player):
     """
     Make a move on the board.
@@ -43,9 +46,18 @@ def mm_move(board, player):
         for move in board.get_empty_squares():
             clone = board.clone()
             clone.move(move[0], move[1], player)
+            
+            
+            # -------- Without memoization --------
+            #values = mm_move(clone, provided.switch_player(player))
 
-            # Call function recursively 
-            values = mm_move(clone, provided.switch_player(player))
+            # -------- Attempt memoization --------
+            if clone.__str__() in LOOKUP:
+                values = LOOKUP[clone.__str__()]
+            else:
+                # Call function recursively 
+                values = mm_move(clone, provided.switch_player(player))
+                LOOKUP[clone.__str__()] = values[0], move
        
             # -------- Non-math solution --------            
 
@@ -63,7 +75,6 @@ def mm_move(board, player):
             #    if values[0] < best_score:
             #        best_score = values[0]
             #        best_move = move
-
 
             # -------- Funky math solution uning negamax --------
 
