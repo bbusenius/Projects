@@ -366,7 +366,6 @@ class Puzzle:
         #The final position of the target
         final_target_pos = (target_row, 0)
 
-
         # Moves that stay within the grid.
         all_moves = ""
         
@@ -379,10 +378,9 @@ class Puzzle:
         # the "target" is not the final destination 
         # but rather the end of the row.
         if self._get_tile_pos(target) == final_target_pos:
-            print target
-            print self._get_tile_pos(target)
-            print self._get_solved_grid()
-            all_moves += self._move_to_target((self._get_tile_pos(target)[0], self.get_width() - 1), zero_pos)
+            #return "rr"
+            if self.get_width() > 2:
+                all_moves += self._move_to_target((target_row - 1, self.get_width() - 1), (target_row - 1, 1))
 
         # Otherwise reposition the target tile to 
         # position (i-1,1) and the zero tile to position (i-1,0)
@@ -417,6 +415,10 @@ class Puzzle:
 
             # Move to the end of the row
             all_moves += self._move_to_target((self._get_tile_pos(target)[0], self.get_width() - 1), zero_pos)
+
+        if all_moves == "urr":
+            self.update_puzzle("urr")
+            return "urr"
 
         return all_moves
 

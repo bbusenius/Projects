@@ -56,11 +56,14 @@ def test_phase1():
     #############################
     ### solve_col0_tile TESTS   
 
+    #puzzle = Puzzle(1, 1, [[0]])
+    #suite.run_test(puzzle.solve_col0_tile(0), "", "Test 1x1 grid:")
+
     # Test 2x3 grid problems with already positioned tile
     puzzle = Puzzle(3, 2, [[1, 2],[4, 3],[0, 5]])
-    suite.run_test(puzzle.solve_col0_tile(2), "ur", "Test C0:")
+    suite.run_test(puzzle.solve_col0_tile(2), "ur", "Test 2x3 grid: tile placed correctly after first move.")
 
-    """puzzle = Puzzle(3, 3, [[1, 2, 3], [6, 4, 5], [0, 7, 8]])
+    puzzle = Puzzle(3, 3, [[1, 2, 3], [6, 4, 5], [0, 7, 8]])
     suite.run_test(puzzle.solve_col0_tile(2), "urr", "Test C1:")
     
     puzzle = Puzzle(3, 3, [[2, 3, 6], [1, 4, 5], [0, 7, 8]])
@@ -79,7 +82,7 @@ def test_phase1():
     suite.run_test(puzzle.solve_col0_tile(2), "uruldruldruldrdlurdluurddlurrrr", "Test C6:")
     
     #puzzle = Puzzle(3, 5, [[1, 2, 10, 4, 5], [6, 7, 8, 9, 3], [0, 11, 12, 13, 14]])
-    #suite.run_test(puzzle.solve_col0_tile(2), "ururdluldruldrdlurdluurddlurrrr", "Test C7:")"""
+    #suite.run_test(puzzle.solve_col0_tile(2), "ururdluldruldrdlurdluurddlurrrr", "Test C7:")
     
     # get testing results
     return suite.report_results()
