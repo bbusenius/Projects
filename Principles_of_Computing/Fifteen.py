@@ -6,10 +6,10 @@ Use the arrows key to swap this tile with its neighbors
 
 #import poc_fifteen_gui
 
-DIRECTIONS = {"u" : -1,
-              "d" : 1,
-              "r" : 1,
-              "l" : -1}
+DIRECTIONS = {"u" : (-1, 0),
+              "d" : (1, 0),
+              "r" : (0, 1),
+              "l" : (0, -1)}
 
 class Puzzle:
     """
@@ -18,7 +18,6 @@ class Puzzle:
 
     def __init__(self, puzzle_height, puzzle_width, initial_grid=None):
         """
-
         Initialize puzzle with default height and width
         Returns a Puzzle object
         """
@@ -43,7 +42,6 @@ class Puzzle:
             ans += str(self._grid[row])
             ans += "\n"
         return ans
-
 
     #####################################
     # GUI methods
@@ -157,6 +155,26 @@ class Puzzle:
         """
         return grid[target_row][target_col + 1:self.get_width()]
 
+    def _get_tile_pos(self, num):
+        """
+        Helper method returns the current position of zero.
+
+        Args:
+            num: integer, the tile value who's position we want.
+
+        Returns:
+            Tuple, row and column containing the value of zero.
+        
+        """
+        row_count = 0
+        num_pos = None
+        for row in self._get_grid():
+            if num in row:
+                num_pos = (row_count, row.index(num))
+                break;
+            row_count += 1
+        return num_pos
+        
 
     def lower_row_invariant(self, target_row, target_col):
         """
@@ -187,47 +205,220 @@ class Puzzle:
         else:
             return False
 
-    def _is_legal(self, direction, row, col):
+    def _is_legal(self, move, target_row, target_col):
         """
         Helper method calculates if a given move is legal.
         Returns boolean.
         """
-        zero_row, zero_col = self.current_position(row, col)
-
-        if direction == "u" and zero_row < 0:
+        if move == "u" and target_row + DIRECTIONS[move] < 0:
             return False
-        elif direction == "d" and zero_row + DIRECTIONS[direction] < self._height - 1:
+        elif move == "d" and target_row + DIRECTIONS[move] < self._height - 1:
             return False
-        elif direction == "l" and zero_col < 0:
+        elif move == "l" and target_col + DIRECTIONS[move] < 0:
             return False
-        elif direction == "r" and zero_col > self._width - 1:
+        elif move == "r" and target_col + DIRECTIONS[move] > self._width - 1:
             return False
         else:
             return True
+
+    def _in_position(self, target_pos, current_pos, solve_col = False):
+        """
+        Helper function checks if the zero tile and the 
+        target tile are both in the correct final position.
+    
+        Args:
+            target_pos: tuple, the target final position.
+
+            current_pos: tuple, the current position.
+
+        Returns:
+            boolean
+        """
+        return current_pos == target_pos and ((self._get_tile_pos(0) == (target_pos[0], target_pos[1] - 1) or (solve_col == True)) )
+
+
+    def _apply_cycle(self, cycle, target, final_target_pos, solve_col = False):
+        """
+        Applies cyclical moves and updates the puzzle as needed.
+        
+        Returns:
+            string, moves needed for completion.
+        """
+        moves = ""
+        # Repeat the cycle until the tile is in position.
+        # Always put the zero to the left of the target tile in the end.
+        #print not self._in_position(final_target_pos, self._get_tile_pos(target), solve_col)
+        while not self._in_position(final_target_pos, self._get_tile_pos(target), solve_col):
+            # Move the target down using cyclical moves
+            for move in cycle:
+                # Terminate if we're in the proper position
+                if self._in_position(final_target_pos, self._get_tile_pos(target), solve_col):
+                    break       
+                
+                # Append and move
+                moves += move
+                self.update_puzzle(move)
+        
+        return moves
+
+    def _move_to_target(self, current_target_pos, zero_pos):
+        """
+        Moves the zero tile to the target.
+        """
+        moves = ""
+        # Move zero to the target tile
+        while current_target_pos[0] < zero_pos[0]:
+            moves += "u"
+            self.update_puzzle("u")
+            zero_pos = self._get_tile_pos(0)
+        while current_target_pos[1] < zero_pos[1]:
+            moves += "l"
+            self.update_puzzle("l")
+            zero_pos = self._get_tile_pos(0)
+        while current_target_pos[1] > zero_pos[1]:
+            moves += "r"
+            self.update_puzzle("r")
+            zero_pos = self._get_tile_pos(0)
+        
+        return moves
+
 
     def solve_interior_tile(self, target_row, target_col):
         """
         Place correct tile at target position
         Updates puzzle and returns a move string
         """
-        # Moves that satisfy the lower_row_invariant
-        move_string = "lddruld"
+        # Convenience variables
+        
+        # The target we wish to move
+        target = self._get_solved_grid()[target_row][target_col]
+        # The initial position of 0
+        zero_pos = self._get_tile_pos(0)
+        # The initial position of the target we wish to move
+        target_pos = self._get_tile_pos(target)
+        #The final position of the target
+        final_target_pos = (target_row, target_col)
+        # The halfway point where upward moves branch left or right
+        memory_point = (target_pos[0], target_col)
+
+        #print "CRGRID", self._get_grid()
+        #print "TARGET", target
+        #print "ZEROPO", zero_pos
+        #print "TARGPO", target_pos
+        #print "FINAL", final_target_pos
 
         # Moves that stay within the grid.
-        actual_move = ""
+        all_moves = ""
+ 
+        # Target is in the same column as zero  
+        if target_pos[0] < final_target_pos[0] and target_pos[1] == final_target_pos[1]:
 
-        for move in move_string:
-            if self._is_legal(move, target_row, target_col):
-                self.update_puzzle(move)
-        return ""
+            # Move to target
+            all_moves += self._move_to_target(target_pos, zero_pos)
+
+            # Cycle the tile to the memory point (y axis)
+            all_moves += self._apply_cycle("lddrl", target, final_target_pos)
+
+       
+        # Target is in the same row as zero
+        elif target_pos[1] < zero_pos[1] and target_pos[0] == zero_pos[0]:
+
+            # Move to target
+            all_moves += self._move_to_target(target_pos, zero_pos)
+
+            # Cycle the tile to the memory point (y axis)
+            all_moves += self._apply_cycle("urrdl", target, final_target_pos)
+
+        # Target is above and to the LEFT of zero
+        elif target_pos[0] < zero_pos[0] and target_pos[1] < zero_pos[1]:
+            # Move to target
+            all_moves += self._move_to_target(target_pos, zero_pos)
+            # Cycle the tile to the memory point (y axis)
+            all_moves += self._apply_cycle("drrul", target, memory_point)
+            # Cycle the tile down to it's final position
+            # Target is in top row
+            if target_pos[0] == 0:
+                all_moves += self._apply_cycle("drul", target, (memory_point[0] + 1, memory_point[1]))
+            all_moves += self._apply_cycle("druld", target, final_target_pos)
+
+        # Target is above and to the RIGHT of zero
+        elif target_pos[0] < zero_pos[0] and target_pos[1] > zero_pos[1]:
+            # Move to target
+            all_moves += self._move_to_target(target_pos, zero_pos)
+            # Cycle the tile to the memory point (y axis)
+            all_moves += self._apply_cycle("ulldr", target, memory_point)
+            # Cycle the tile down to it's final position
+            all_moves += self._apply_cycle("druld", target, final_target_pos)
+
+        return all_moves
 
     def solve_col0_tile(self, target_row):
         """
         Solve tile in column zero on specified row (> 1)
         Updates puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        # The target we wish to move
+        target = self._get_solved_grid()[target_row][0]
+        # The initial position of 0
+        zero_pos = self._get_tile_pos(0)
+        # The initial position of the target we wish to move
+        target_pos = self._get_tile_pos(target)
+        #The final position of the target
+        final_target_pos = (target_row, 0)
+
+
+        # Moves that stay within the grid.
+        all_moves = ""
+        
+        # Move up and to the right first, for all cases
+        all_moves += "ur"
+        self.update_puzzle("ur")
+    
+        # If the target is already in position
+        # move to he end of the line. In this case
+        # the "target" is not the final destination 
+        # but rather the end of the row.
+        if self._get_tile_pos(target) == final_target_pos:
+            print target
+            print self._get_tile_pos(target)
+            print self._get_solved_grid()
+            all_moves += self._move_to_target((self._get_tile_pos(target)[0], self.get_width() - 1), zero_pos)
+
+        # Otherwise reposition the target tile to 
+        # position (i-1,1) and the zero tile to position (i-1,0)
+        else:
+            # Move to the target
+            all_moves += self._move_to_target(target_pos, self._get_tile_pos(0))
+
+            # Solve for corner case (top row, right corner)
+            if target_pos[0] == 0 and target_pos[1] == self.get_width() - 1:
+                all_moves += "dluld"
+                self.update_puzzle("dluld")
+            # Solve for case when target tile is one column over and on the top row
+            elif target_pos == (0, 1):
+                all_moves += "ld"
+                self.update_puzzle("ld")
+            # Solve for corner case (top row left corder)
+            elif target_pos == (0, 0):
+                all_moves += "druld"
+                self.update_puzzle("druld")
+            # Target is not in the top row
+            elif target_pos[0] != 0:
+                # Cycle the tile to the memory point (y axis) -> WATCH THE MAGIC # 1 
+                all_moves += self._apply_cycle("ulldr", target, (target_pos[0], 1), False)
+                
+            # Solve for normal cases in the top row
+            #elif target_pos[0] == 0:
+            #    all_moves += "dlul"
+            #    self.update_puzzle("dlul")
+            
+            # Cycle for solving the column
+            all_moves += self._apply_cycle("ruldrdlurdluurddlu", target, final_target_pos, True)
+
+            # Move to the end of the row
+            all_moves += self._move_to_target((self._get_tile_pos(target)[0], self.get_width() - 1), zero_pos)
+
+        return all_moves
 
     #############################################################
     # Phase two methods
