@@ -56,8 +56,8 @@ def test_phase1():
     #############################
     ### solve_col0_tile TESTS   
 
-    #puzzle = Puzzle(1, 1, [[0]])
-    #suite.run_test(puzzle.solve_col0_tile(0), "", "Test 1x1 grid:")
+    puzzle = Puzzle(1, 1, [[0]])
+    suite.run_test(puzzle.solve_col0_tile(0), "", "Test 1x1 grid:")
 
     # Test 2x3 grid problems with already positioned tile
     puzzle = Puzzle(3, 2, [[1, 2],[4, 3],[0, 5]])

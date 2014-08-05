@@ -261,24 +261,21 @@ class Puzzle:
         
         return moves
 
-    def _move_to_target(self, current_target_pos, zero_pos):
+    def _move_to_target(self, current_target_pos):
         """
         Moves the zero tile to the target.
         """
         moves = ""
         # Move zero to the target tile
-        while current_target_pos[0] < zero_pos[0]:
+        while current_target_pos[0] < self._get_tile_pos(0)[0]:
             moves += "u"
             self.update_puzzle("u")
-            zero_pos = self._get_tile_pos(0)
-        while current_target_pos[1] < zero_pos[1]:
+        while current_target_pos[1] < self._get_tile_pos(0)[1]:
             moves += "l"
             self.update_puzzle("l")
-            zero_pos = self._get_tile_pos(0)
-        while current_target_pos[1] > zero_pos[1]:
+        while current_target_pos[1] > self._get_tile_pos(0)[1]:
             moves += "r"
             self.update_puzzle("r")
-            zero_pos = self._get_tile_pos(0)
         
         return moves
 
@@ -314,7 +311,7 @@ class Puzzle:
         if target_pos[0] < final_target_pos[0] and target_pos[1] == final_target_pos[1]:
 
             # Move to target
-            all_moves += self._move_to_target(target_pos, zero_pos)
+            all_moves += self._move_to_target(target_pos)
 
             # Cycle the tile to the memory point (y axis)
             all_moves += self._apply_cycle("lddrl", target, final_target_pos)
@@ -324,7 +321,7 @@ class Puzzle:
         elif target_pos[1] < zero_pos[1] and target_pos[0] == zero_pos[0]:
 
             # Move to target
-            all_moves += self._move_to_target(target_pos, zero_pos)
+            all_moves += self._move_to_target(target_pos)
 
             # Cycle the tile to the memory point (y axis)
             all_moves += self._apply_cycle("urrdl", target, final_target_pos)
@@ -332,7 +329,7 @@ class Puzzle:
         # Target is above and to the LEFT of zero
         elif target_pos[0] < zero_pos[0] and target_pos[1] < zero_pos[1]:
             # Move to target
-            all_moves += self._move_to_target(target_pos, zero_pos)
+            all_moves += self._move_to_target(target_pos)
             # Cycle the tile to the memory point (y axis)
             all_moves += self._apply_cycle("drrul", target, memory_point)
             # Cycle the tile down to it's final position
@@ -344,7 +341,7 @@ class Puzzle:
         # Target is above and to the RIGHT of zero
         elif target_pos[0] < zero_pos[0] and target_pos[1] > zero_pos[1]:
             # Move to target
-            all_moves += self._move_to_target(target_pos, zero_pos)
+            all_moves += self._move_to_target(target_pos)
             # Cycle the tile to the memory point (y axis)
             all_moves += self._apply_cycle("ulldr", target, memory_point)
             # Cycle the tile down to it's final position
@@ -368,7 +365,11 @@ class Puzzle:
 
         # Moves that stay within the grid.
         all_moves = ""
-        
+      
+        # If the grid is already solved 
+        if self._get_solved_grid() == self._get_grid():
+            return ""
+ 
         # Move up and to the right first, for all cases
         all_moves += "ur"
         self.update_puzzle("ur")
@@ -380,13 +381,13 @@ class Puzzle:
         if self._get_tile_pos(target) == final_target_pos:
             #return "rr"
             if self.get_width() > 2:
-                all_moves += self._move_to_target((target_row - 1, self.get_width() - 1), (target_row - 1, 1))
+                all_moves += self._move_to_target((target_row - 1, self.get_width() - 1))
 
         # Otherwise reposition the target tile to 
         # position (i-1,1) and the zero tile to position (i-1,0)
         else:
             # Move to the target
-            all_moves += self._move_to_target(target_pos, self._get_tile_pos(0))
+            all_moves += self._move_to_target(target_pos)
 
             # Solve for corner case (top row, right corner)
             if target_pos[0] == 0 and target_pos[1] == self.get_width() - 1:
@@ -414,11 +415,7 @@ class Puzzle:
             all_moves += self._apply_cycle("ruldrdlurdluurddlu", target, final_target_pos, True)
 
             # Move to the end of the row
-            all_moves += self._move_to_target((self._get_tile_pos(target)[0], self.get_width() - 1), zero_pos)
-
-        if all_moves == "urr":
-            self.update_puzzle("urr")
-            return "urr"
+            all_moves += self._move_to_target((self._get_tile_pos(target)[0], self.get_width() - 1))
 
         return all_moves
 
