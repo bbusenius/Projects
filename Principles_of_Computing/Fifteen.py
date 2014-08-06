@@ -496,7 +496,14 @@ class Puzzle:
         Solve the tile in row one at the specified column
         Updates puzzle and returns a move string
         """
-        # replace with your code
+        # The initial position of the target we wish to move
+        target_pos = self._get_tile_pos(target)
+
+        # Moves that stay within the grid.
+        all_moves = ""
+
+        # Move to the target
+        all_moves += self._move_to_target(target_pos)
         return ""
 
     ###########################################################
