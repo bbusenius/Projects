@@ -278,12 +278,15 @@ class Puzzle:
         while current_target_pos[0] < self._get_tile_pos(0)[0]:
             moves += "u"
             self.update_puzzle("u")
+        while current_target_pos[0] > self._get_tile_pos(0)[0]:
+            moves += "d"
+            self.update_puzzle("d")
         while current_target_pos[1] < self._get_tile_pos(0)[1]:
             moves += "l"
             self.update_puzzle("l")
         while current_target_pos[1] > self._get_tile_pos(0)[1]:
             moves += "r"
-            self.update_puzzle("r")
+            self.update_puzzle("r") 
         
         return moves
 
@@ -400,7 +403,7 @@ class Puzzle:
         if self._get_tile_pos(target) == final_target_pos:
             #return "rr"
             if self.get_width() > 2:
-                all_moves += self._move_to_target((self.get_height() - 1, self.get_width() - 1))
+                all_moves += self._move_to_target((self.get_height() - 2, self.get_width() - 1))
 
         # Otherwise reposition the target tile to 
         # position (i-1,1) and the zero tile to position (i-1,0)
@@ -450,7 +453,6 @@ class Puzzle:
             all_moves += self._move_to_target((self._get_tile_pos(target)[0] - 1, self.get_width() - 1))
             #if self._get_next_target(target):
             #    all_moves += self._move_to_target(self._get_tile_pos(self._get_next_target(target), True))
-
         return all_moves
 
     #############################################################
@@ -488,23 +490,101 @@ class Puzzle:
         Solve the tile in row zero at the specified column
         Updates puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        # The target we wish to move
+        target = self._get_solved_grid()[0][target_col]
+        # The initial position of the target we wish to move
+        target_pos = self._get_tile_pos(target)
+        # The final position of the target
+        final_target_pos = (0, target_col)
+        # Moves that stay within the grid.
+        all_moves = ""
+
+        # Opening move
+        all_moves += "ld"
+        self.update_puzzle("ld")
+
+        # The puzzle is already solved
+        if self._get_tile_pos(target) == final_target_pos:
+            return all_moves
+        else:
+            # Target target is above the zero after the initial moves
+            if self._get_tile_pos(target) == (self._get_tile_pos(0)[0] -1 , self._get_tile_pos(0)[1]):
+                all_moves += "uldurdlurrdluldrruld"
+                self.update_puzzle("uldurdlurrdluldrruld")
+
+
+            # If the tile is down
+            elif self._get_tile_pos(target)[0] == 1:
+                # Move to target
+                all_moves += self._move_to_target(target_pos) 
+                # Cycle over to a stopping point on the second row
+                all_moves += self._apply_cycle("urrdl", target, (1, final_target_pos[1] -  1), True)
+                #Arbitrary move
+                all_moves += "urdlu"
+                self.update_puzzle("urdlu")
+                #Arbitrary move over to the left
+                all_moves += "rrdlul"
+                self.update_puzzle("rrdlul")
+                # Bring it home
+                all_moves += self._apply_cycle("drrul", target, final_target_pos, False)
+                #Arbitrary move down
+                all_moves += "d"
+                self.update_puzzle("d")
+            # The tiles below the zero are solved
+            elif self._get_right_of_zero(self._get_grid(), 1, target_col) == self._get_right_of_zero(self._get_solved_grid(), 1, target_col):
+                # Initial move
+                #while self._get_right_of_zero(self._get_grid(), 1, target_col) != self._get_right_of_zero(self._get_solved_grid(), 1, target_col) \
+                #    and self._get_tile_pos(0) != (1, final_target_pos[1] -1 ):
+                #    print "YO"
+                #    self._apply_cycle("uldruldurdlurrdluldrruld", target, final_target_pos, True)
+                all_moves += "uldruldurdlurrdluldrruld"
+                self.update_puzzle("uldruldurdlurrdluldrruld")
+                        
+
+            
+
+        return all_moves
 
     def solve_row1_tile(self, target_col):
         """
         Solve the tile in row one at the specified column
         Updates puzzle and returns a move string
         """
+        # The target we wish to move
+        target = self._get_solved_grid()[1][target_col]
+
         # The initial position of the target we wish to move
         target_pos = self._get_tile_pos(target)
+
+        # The final position of the target
+        final_target_pos = (1, target_col)
 
         # Moves that stay within the grid.
         all_moves = ""
 
         # Move to the target
         all_moves += self._move_to_target(target_pos)
-        return ""
+
+        # If the puzzel is solved after the move to target
+        if self._get_tile_pos(target) == final_target_pos:
+            # Move to the position above the solved tile
+            all_moves += self._move_to_target((0, target_col))
+        # If the target is in the same row as zero
+        elif self._get_tile_pos(target)[0] == 1:
+            # Cycle to stopping point for final cycle
+            all_moves += self._apply_cycle("urrdl", target, (1, final_target_pos[1]), True)
+            # Move to the end of the top row
+            all_moves += self._move_to_target((0, self.get_width() - 1))
+        # If the target is in the same row as the zero
+        elif self._get_tile_pos(target)[0] == 0:
+            # Cycle to stopping point for final cycle
+            all_moves += self._apply_cycle("drrul", target, (0, final_target_pos[1]), True)
+            # Cycle to final position
+            all_moves += self._apply_cycle("dru", target, (1, final_target_pos[1]), True)
+
+
+
+        return all_moves
 
     ###########################################################
     # Phase 3 methods
@@ -514,15 +594,26 @@ class Puzzle:
         Solve the upper left 2x2 part of the puzzle
         Updates the puzzle and returns a move string
         """
-        # replace with your code
-        return ""
+        # The target we wish to move
+        target = self._get_solved_grid()[self._get_tile_pos(0)[0]][self._get_tile_pos(0)[1]]
+
+        all_moves = ""
+        cycle = "uldr"
+        while self._get_grid() != self._get_solved_grid():
+            # Move the target down using cyclical moves
+            for move in cycle:
+                if self._get_grid() == self._get_solved_grid():
+                    break 
+                # Append and move
+                all_moves += move
+                self.update_puzzle(move)
+        return all_moves
 
     def solve_puzzle(self):
         """
         Generate a solution string for a puzzle
         Updates the puzzle and returns a move string
         """
-        # replace with your code
         return ""
 
 # Start interactive simulation
