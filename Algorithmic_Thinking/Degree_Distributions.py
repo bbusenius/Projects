@@ -95,3 +95,40 @@ def in_degree_distribution(digraph):
             distribution[in_degrees[key]] += 1
     return distribution
 
+
+def sort_dict(dictionary):
+    """
+    Sort a dictionary by key.
+
+    Args:
+        dictionary: a dictionary to sort
+
+    Returns:
+        A list of tuples as key value pairs ordered by key.
+    """
+    retval = []
+    for key in sorted(dictionary.iterkeys()):
+        retval.append((key, dictionary[key]))
+    return retval
+
+
+def normalize_distribution(dictionary):
+    """
+    Function normalizes the degree distribution of a graph.
+
+    Args:
+        dictionary: a dictionary of key value pairs where 
+        the keys represent degrees and the values represent
+        the number of nodes with the stated degree. Such a
+        dictionary can be computed by the 
+        in_degree_distribution function.
+
+    Returns:
+        A dictionary of degrees with normalized distributions
+        that sum up to 1.
+    """
+    retval = {}
+    num_nodes =  float(sum(dictionary.values()))
+    for key in dictionary:
+        retval[key] = dictionary[key] / num_nodes
+    return retval
