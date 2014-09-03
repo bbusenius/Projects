@@ -16,6 +16,7 @@ import urllib2
 
 # Plotting library
 import matplotlib.pyplot as plt
+import random 
 
 ###################################
 # Code for loading citation graph
@@ -46,18 +47,33 @@ def load_graph(graph_url):
 
     return answer_graph
 
-# Load the external graph of citation information
-citation_graph = load_graph(CITATION_URL)
+def plot_citation_graph():
+    """
+    Function for plotting the citation graph.
+    """
+    # Load the external graph of citation information
+    citation_graph = load_graph(CITATION_URL)
 
-# Calculate the in-degree distribution of the citation graph
-in_degree_distribution = dd.in_degree_distribution(citation_graph)
+    # Calculate the in-degree distribution of the citation graph
+    in_degree_distribution = dd.in_degree_distribution(citation_graph)
 
-# Normalize the in-degree distribution to sum up to 1
-normalized_distribution = dd.normalize_distribution(in_degree_distribution)
+    # Normalize the in-degree distribution to sum up to 1
+    normalized_distribution = dd.normalize_distribution(in_degree_distribution)
 
-# Plot the normalized distribution on a log/log graph
-plt.loglog(normalized_distribution.keys(), normalized_distribution.values(), 'ro', basex=10, basey=10)
-plt.title('Log/log plot of the normalized distribution of a citation graph')  
-plt.ylabel('Number of citations - base 10')  
-plt.xlabel('Papers - base 10')  
-plt.show()
+    # Plot the normalized distribution on a log/log graph
+    plt.loglog(normalized_distribution.keys(), normalized_distribution.values(), 'ro', basex=10, basey=10)
+    plt.title('Log/log plot of the normalized distribution of a citation graph')  
+    plt.ylabel('Number of citations - base 10')  
+    plt.xlabel('Papers - base 10')  
+    plt.show()
+
+
+def ER_algorithm(num_nodes, probability):
+
+    graph = {}
+    for key in range(num_nodes):
+        a = random.choice([0, 1])
+        if a < probability:
+            graph[key] = set([value for value in range(num_nodes) if value != key])
+    return graph
+#plot_citation_graph()
