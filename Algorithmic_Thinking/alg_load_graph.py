@@ -70,10 +70,25 @@ def plot_citation_graph():
 
 def ER_algorithm(num_nodes, probability):
 
+    # All possible nodes 
+    all_nodes = range(num_nodes)
+
+    # Dynamically create a graph
     graph = {}
     for key in range(num_nodes):
-        a = random.choice([0, 1])
-        if a < probability:
-            graph[key] = set([value for value in range(num_nodes) if value != key])
+        graph[key] = []
+
+    # Loop over every possible combination of 
+    # nodes and build an edge between them 
+    # based on the probability
+    for current_node in range(num_nodes):
+        for possible_node in all_nodes:
+            if possible_node != current_node:
+                a = random.uniform(0, 1.0)
+                if a < probability:
+                    graph[current_node].append(possible_node)
     return graph
+
+print ER_algorithm(100, 0.4)
+
 #plot_citation_graph()
