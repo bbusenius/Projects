@@ -265,7 +265,6 @@ def random_undirected_graph(num_nodes, probability):
     Algorithm for generating random undirected graphs
     (ER algorithm).
     """
-
     # All possible nodes 
     all_nodes = range(num_nodes)
 
@@ -290,7 +289,6 @@ def random_directed_graph(num_nodes, probability):
     Algorithm for generating random directed graphs 
     (Modified ER algorithm).
     """
-
     def random_num():
         """
         Return a random number.
