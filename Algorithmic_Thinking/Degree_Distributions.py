@@ -373,5 +373,5 @@ def random_DPA_directed_graph(num_nodes, m_nodes):
 #print average_out_degree_dist(load_graph(CITATION_URL))
 #print make_complete_graph(4)
 #print random_DPA_directed_graph(27770, 13)
-plot_graph(random_DPA_directed_graph(27770, 13), 'Log/log plot of the in-degree distribution of the DPA graph', 'Nodes (base 10)', 'In-degrees (base 10)')
+#plot_graph(random_DPA_directed_graph(27770, 13), 'Log/log plot of the in-degree distribution of the DPA graph', 'Nodes (base 10)', 'In-degrees (base 10)')
 
