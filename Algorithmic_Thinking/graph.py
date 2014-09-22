@@ -10,8 +10,9 @@ import urllib2
 import random
 import time
 
-# Queue module
+# Collections modules
 from collections import deque
+from collections import Counter as count
 
 # DPA trial class
 import alg_dpa_trial
@@ -19,6 +20,7 @@ import alg_dpa_trial
 # UPA trial class
 import alg_upa_trial
 
+# Example directed graphs
 EX_GRAPH0 = {0 : set([1, 2]), 1 : set([]), 2 : set([])}
 
 EX_GRAPH1 =  { 0 : set([1, 4, 5]), 
@@ -39,6 +41,13 @@ EX_GRAPH2 =  { 0 : set([1, 4, 5]),
                7 : set([3]), 
                8 : set([1, 2]),
                9 : set([0, 3, 4, 5, 6, 7])}
+
+# Example undirected graphs
+EX_GRAPH3 = { 0 : set([1, 3, 4]),
+              1 : set([0, 2, 3, 4]),
+              2 : set([1]),
+              3 : set([0, 1]),
+              4 : set([0, 1])}
 
 
 def load_graph(graph_url):
@@ -529,3 +538,90 @@ def random_order(graph):
     nodes = graph.keys()
     random.shuffle(nodes)
     return nodes
+
+def copy_graph(graph):
+    """
+    Make a copy of a graph
+    """
+    new_graph = {}
+    for node in graph:
+        new_graph[node] = set(graph[node])
+    return new_graph
+
+def delete_node(ugraph, node):
+    """
+    Delete a node from an undirected graph.
+
+    Args:
+        ugraph: a dictionary of sets representing an 
+        undirected graph.
+
+    Returns:
+        None, deletes a node from the graph.
+    """
+    neighbors = ugraph[node]
+    ugraph.pop(node)
+    for neighbor in neighbors:
+        ugraph[neighbor].remove(node)
+
+def targeted_order(ugraph):
+    """
+    DEPRECATED - Currently fails for some reason.
+    Compute a targeted attack order consisting
+    of nodes of maximal degree.
+    
+    Args:
+        ugraph: a dictionary of sets representing an 
+        undirected graph.
+
+    Returns:
+        A list of nodes.
+    """
+    # Copy the graph.
+    new_graph = copy_graph(ugraph)
+    
+    order = []    
+    while len(new_graph) > 0:
+        max_degree = -1
+        for node in new_graph:
+            if len(new_graph[node]) > max_degree:
+                max_degree = len(new_graph[node])
+                max_degree_node = node
+        
+        neighbors = new_graph[max_degree_node]
+        new_graph.pop(max_degree_node)
+        for neighbor in neighbors:
+            new_graph[neighbor].remove(max_degree_node)
+
+        order.append(max_degree_node)
+    return order
+
+def fast_targeted_order(ugraph):
+    """
+    A faster implementation of targeted_order.
+    Compute a targeted attack order consisting
+    of nodes of maximal degree.
+    
+    Args:
+        ugraph: a dictionary of sets representing an 
+        undirected graph.
+
+    Returns: 
+        A list of nodes in decreasing order of their
+        degrees.
+    """
+    # Copy the graph
+    new_graph = copy_graph(ugraph)
+
+    # Create a list whose kth element is the set of nodes of degree k.
+    # Put the list in order of decreasing degree.
+    degree_sets = list(set([]) for degree_node in range(len(new_graph)))
+    l = list(degree_sets[len(new_graph[degree_node])].add(degree_node) for degree_node in new_graph)
+    degree_sets = degree_sets[::-1]
+
+    retval = []
+    for nodes in degree_sets:
+        while len(nodes) != 0:
+            current_node = nodes.pop()
+            retval.append(current_node) 
+    return retval
