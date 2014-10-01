@@ -143,15 +143,16 @@ def fast_closest_pair(cluster_list):
                 if element - mid < dist:
                     point_list.append(element)
                     extra_points += 1
-            for unum in range(0, extra_points - 2):
+            for unum in range(0, extra_points - 1):
                 for vnum in range(unum + 1, min([unum + 3, extra_points])):
                     #dist, x_idx, y_idx = min((dist, x_idx, y_idx), (cluster_list[point_list[unum]].distance(cluster_list[point_list[vnum]]), point_list[unum], point_list[vnum]))
                     #print pair_distance(cluster_list, point_list[unum], point_list[vnum])
                     if dist < pair_distance(cluster_list, point_list[unum], point_list[vnum])[0]: 
                         dist, x_idx, y_idx = dist, x_idx, y_idx
                     else:
-                        dist, x_idx, y_idx = pair_distance(cluster_list, point_list[unum], point_list[vnum])
-
+                        dist = pair_distance(cluster_list, point_list[unum], point_list[vnum])[0]
+                        x_idx = point_list[unum]
+                        y_idx = point_list[vnum]
         return (dist, x_idx, y_idx)
             
     # compute list of indices for the clusters ordered in the horizontal direction
@@ -173,8 +174,8 @@ def fast_closest_pair(cluster_list):
 
 #print fast_closest_pair([alg_cluster.Cluster(set([]), 1, 2, 1, 0), alg_cluster.Cluster(set([]), 8, 1, 1, 0), alg_cluster.Cluster(set([]), 4, 2, 1, 0)]) 
 
-print fast_closest_pair([alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 5, 0, 1, 0), alg_cluster.Cluster(set([]), 70, 10, 1, 0), alg_cluster.Cluster(set([]), 200, 100, 1, 0), alg_cluster.Cluster(set([]), 300, 101, 1, 0), alg_cluster.Cluster(set([]), 301, 102, 1, 0), alg_cluster.Cluster(set([]), 400, 222, 1, 0)]) 
-
+#print slow_closest_pairs([alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 2, 0, 1, 0), alg_cluster.Cluster(set([]), 400, 0, 1, 0), alg_cluster.Cluster(set([]), 401, 0, 1, 0)])
+#print fast_closest_pair([alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 2, 0, 1, 0), alg_cluster.Cluster(set([]), 400, 0, 1, 0), alg_cluster.Cluster(set([]), 401, 0, 1, 0)])
 
 #print slow_closest_pairs([alg_cluster.Cluster(set([]), 0, 0, 1, 0), alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 2, 0, 1, 0), alg_cluster.Cluster(set([]), 3, 0, 1, 0), alg_cluster.Cluster(set([]), 4, 0, 1, 0), alg_cluster.Cluster(set([]), 5, 0, 1, 0), alg_cluster.Cluster(set([]), 6, 0, 1, 0), alg_cluster.Cluster(set([]), 7, 0, 1, 0), alg_cluster.Cluster(set([]), 8, 0, 1, 0), alg_cluster.Cluster(set([]), 9, 0, 1, 0), alg_cluster.Cluster(set([]), 10, 0, 1, 0), alg_cluster.Cluster(set([]), 11, 0, 1, 0), alg_cluster.Cluster(set([]), 12, 0, 1, 0), alg_cluster.Cluster(set([]), 13, 0, 1, 0), alg_cluster.Cluster(set([]), 14, 0, 1, 0), alg_cluster.Cluster(set([]), 15, 0, 1, 0), alg_cluster.Cluster(set([]), 16, 0, 1, 0), alg_cluster.Cluster(set([]), 17, 0, 1, 0), alg_cluster.Cluster(set([]), 18, 0, 1, 0), alg_cluster.Cluster(set([]), 19, 0, 1, 0)])
 
