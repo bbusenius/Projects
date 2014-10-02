@@ -3,7 +3,7 @@ import alg_cluster
 import csv
 import random
 
-for run_counter in range(74):
+for run_counter in range(99):
     random.seed(run_counter)
     probability = random.randrange(10,100) / 100.0
     print "Run: ", run_counter, "p:", probability

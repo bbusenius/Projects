@@ -108,15 +108,17 @@ def fast_closest_pair(cluster_list):
             #for val in horiz_order:
             #    small_list.append(cluster_list[val])
             small_list = list(cluster_list[val] for val in horiz_order)
+            #print 'TEST ########################################'
+            #print slow_closest_pairs(small_list)
             return slow_closest_pairs(small_list).pop()
         # Divide
         else:
             # Number of points in each half
             # Should be: ceiling(x) = [x] is the smallest integer not less than x ([] should be chopped off at the bottom)
-            half_points = total / 2
+            half_points = int(math.ceil(total / 2.0))
             # Horizontal coordinate of the vertical dividing line
             mid = .5 * (cluster_list[horiz_order[0]].horiz_center() + cluster_list[horiz_order[total-1]].horiz_center())
-             
+
             # Split the horiz_order list into 2 halves
             h_left = horiz_order[0:half_points]
             h_right = horiz_order[half_points:total]
@@ -153,6 +155,7 @@ def fast_closest_pair(cluster_list):
                         dist = pair_distance(cluster_list, point_list[unum], point_list[vnum])[0]
                         x_idx = point_list[unum]
                         y_idx = point_list[vnum]
+        
         return (dist, x_idx, y_idx)
             
     # compute list of indices for the clusters ordered in the horizontal direction
@@ -172,10 +175,13 @@ def fast_closest_pair(cluster_list):
     return (answer[0], min(answer[1:]), max(answer[1:]))
 
 
-#print fast_closest_pair([alg_cluster.Cluster(set([]), 1, 2, 1, 0), alg_cluster.Cluster(set([]), 8, 1, 1, 0), alg_cluster.Cluster(set([]), 4, 2, 1, 0)]) 
+#print fast_closest_pair([alg_cluster.Cluster(set([]), 4, 2, 1, 0), alg_cluster.Cluster(set([]), 5, 1, 1, 0), alg_cluster.Cluster(set([]), 6, 2, 1, 0), alg_cluster.Cluster(set([]), 8, 2, 1, 0)]) 
 
-#print slow_closest_pairs([alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 2, 0, 1, 0), alg_cluster.Cluster(set([]), 400, 0, 1, 0), alg_cluster.Cluster(set([]), 401, 0, 1, 0)])
-#print fast_closest_pair([alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 2, 0, 1, 0), alg_cluster.Cluster(set([]), 400, 0, 1, 0), alg_cluster.Cluster(set([]), 401, 0, 1, 0)])
+#print slow_closest_pairs([alg_cluster.Cluster(set(['06111', '06083', '06059', '06037']), 105.658470671, 359.684551417, 13518171, 0.000103217153859), alg_cluster.Cluster(set(['06029', '06107']), 105.323760186, 318.981625973, 1029666, 8.30607041507e-05), alg_cluster.Cluster(set(['06071']), 148.402461892, 350.061039619, 1709434, 7.7e-05), alg_cluster.Cluster(set(['06019', '06039']), 95.8235848204, 288.669728653, 922516, 6.34662032962e-05), alg_cluster.Cluster(set(['06067', '06075', '06081', '06001', '06085', '06113', '06101']), 62.8105828117, 258.407213927, 6081309, 6.59259004928e-05), alg_cluster.Cluster(set(['06021', '06089']), 75.6645803941, 192.333495442, 189709, 5.86732785477e-05), alg_cluster.Cluster(set(['08005', '08001', '08031']), 376.551142131, 267.577115777, 1406460, 6.86979075125e-05), alg_cluster.Cluster(set(['09003']), 925.917212741, 177.152290276, 857183, 5.7e-05), alg_cluster.Cluster(set(['12073']), 762.463896365, 477.365342219, 239452, 6.1e-05), alg_cluster.Cluster(set(['13313', '47065']), 733.639126975, 371.72980828, 391421, 5.99330541795e-05), alg_cluster.Cluster(set(['13135', '13067', '13247', '13151', '13121', '13089', '13063']), 752.643396816, 399.380600745, 3104039, 6.59099199462e-05), alg_cluster.Cluster(set(['13245']), 796.799727342, 404.391349655, 199775, 5.9e-05), alg_cluster.Cluster(set(['19163']), 621.490118929, 227.666851619, 158668, 5.6e-05), alg_cluster.Cluster(set(['17031']), 668.978975824, 219.400257219, 5376741, 6.1e-05), alg_cluster.Cluster(set(['21019']), 768.726553092, 290.270551648, 49752, 5.8e-05), alg_cluster.Cluster(set(['21111']), 715.347723878, 301.167740487, 693604, 5.9e-05), alg_cluster.Cluster(set(['22017']), 570.826412839, 442.202574191, 252161, 6.2e-05), alg_cluster.Cluster(set(['22071']), 651.338581076, 496.465402252, 484674, 6.4e-05), alg_cluster.Cluster(set(['25025', '25017']), 945.61207339, 156.985293113, 2155203, 6.04809226787e-05), alg_cluster.Cluster(set(['26163', '26125']), 745.1476224, 197.473835078, 3255318, 6.14321734466e-05), alg_cluster.Cluster(set(['27123', '27053']), 572.136841573, 151.345524697, 1627235, 5.73718977284e-05), alg_cluster.Cluster(set(['29189', '29510']), 629.976164517, 297.473005985, 1364504, 6.22965861588e-05), alg_cluster.Cluster(set(['28027']), 631.700027283, 400.68741948, 30622, 6e-05), alg_cluster.Cluster(set(['28159']), 663.514261498, 425.274137823, 20160, 5.9e-05), alg_cluster.Cluster(set(['28049']), 638.051593606, 445.785870317, 250800, 6e-05), alg_cluster.Cluster(set(['37119']), 813.724315147, 356.853362811, 695454, 5.6e-05), alg_cluster.Cluster(set(['31109', '31055']), 522.63784996, 242.365927507, 713876, 6.1649391491e-05), alg_cluster.Cluster(set(['36119', '36005', '34003', '34013', '34017', '36085', '34023', '34031', '36061', '36081', '36103', '36047', '36059', '34039']), 912.582872765, 205.741362248, 15734128, 8.80317462143e-05), alg_cluster.Cluster(set(['34007', '42101']), 895.817161022, 228.943706724, 2026482, 5.77488593533e-05), alg_cluster.Cluster(set(['39035']), 776.351457758, 216.558042612, 1393978, 5.8e-05), alg_cluster.Cluster(set(['53011', '41051', '41067', '41005']), 100.699663547, 79.3107064609, 1789457, 7.73218926188e-05), alg_cluster.Cluster(set(['42003', '54009']), 808.812984502, 234.02138583, 1307113, 6.13114895193e-05), alg_cluster.Cluster(set(['47037']), 700.009323976, 350.107265446, 569891, 6.1e-05), alg_cluster.Cluster(set(['47093']), 753.012743594, 348.235180569, 382032, 5.6e-05), alg_cluster.Cluster(set(['48201', '48245']), 542.286222705, 504.62385661, 3652629, 5.97929839028e-05), alg_cluster.Cluster(set(['51520']), 784.05333332, 328.847863787, 17367, 5.6e-05), alg_cluster.Cluster(set(['11001', '24033', '24005', '24031', '51013', '51059', '24510', '51510', '51840', '24027', '51610']), 867.561803011, 256.631780926, 5221650, 6.55267515058e-05), alg_cluster.Cluster(set(['51775', '51680', '51770', '51820']), 827.430593192, 303.827886524, 204447, 6.12496294883e-05), alg_cluster.Cluster(set(['51087', '51570', '51760']), 866.047992388, 293.409901526, 476987, 7.2289332833e-05), alg_cluster.Cluster(set(['53033']), 125.27486023, 39.1497730391, 1737034, 5.8e-05), alg_cluster.Cluster(set(['55079']), 664.855000617, 192.484141264, 940164, 7.4e-05)])
+
+
+
+
 
 #print slow_closest_pairs([alg_cluster.Cluster(set([]), 0, 0, 1, 0), alg_cluster.Cluster(set([]), 1, 0, 1, 0), alg_cluster.Cluster(set([]), 2, 0, 1, 0), alg_cluster.Cluster(set([]), 3, 0, 1, 0), alg_cluster.Cluster(set([]), 4, 0, 1, 0), alg_cluster.Cluster(set([]), 5, 0, 1, 0), alg_cluster.Cluster(set([]), 6, 0, 1, 0), alg_cluster.Cluster(set([]), 7, 0, 1, 0), alg_cluster.Cluster(set([]), 8, 0, 1, 0), alg_cluster.Cluster(set([]), 9, 0, 1, 0), alg_cluster.Cluster(set([]), 10, 0, 1, 0), alg_cluster.Cluster(set([]), 11, 0, 1, 0), alg_cluster.Cluster(set([]), 12, 0, 1, 0), alg_cluster.Cluster(set([]), 13, 0, 1, 0), alg_cluster.Cluster(set([]), 14, 0, 1, 0), alg_cluster.Cluster(set([]), 15, 0, 1, 0), alg_cluster.Cluster(set([]), 16, 0, 1, 0), alg_cluster.Cluster(set([]), 17, 0, 1, 0), alg_cluster.Cluster(set([]), 18, 0, 1, 0), alg_cluster.Cluster(set([]), 19, 0, 1, 0)])
 
