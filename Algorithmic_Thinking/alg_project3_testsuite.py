@@ -172,7 +172,4 @@ def test_kmeans():
 
     suite.report_results()
     
-test_kmeans()
-        
-        
-
+#test_kmeans()

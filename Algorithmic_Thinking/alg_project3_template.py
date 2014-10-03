@@ -178,7 +178,10 @@ def hierarchical_clustering(cluster_list, num_clusters):
     Input: List of clusters, number of clusters
     Output: List of clusters whose length is num_clusters
     """
-    print type(cluster_list) 
+    
+    copy = list(dupe.copy() for dupe in cluster_list)
+    while cluster_list > num_clusters:
+        ci, cj = 
     return []
 
 
