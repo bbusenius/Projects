@@ -12,8 +12,11 @@ where cluster_list is a list of clusters in the plane
 
 import math
 import alg_cluster
+import random 
+import time
+import matplotlib.pyplot as plt
 #import cProfile
-#import sys 
+import sys 
 
 def pair_distance(cluster_list, idx1, idx2):
     """
@@ -84,7 +87,7 @@ def fast_closest_pair(cluster_list):
     using O(n log(n)) divide and conquer algorithm
     
     Returns a tuple (distance, idx1, idx2) with idx1 < idx 2 where
-    cluster_list[idx1] and cluster_list[idx2]
+    cluster_list[idx1] and cluster_list[idx2]pair_distance(cluster_list, idx1, idx2)
     have the smallest distance dist of any pair of clusters
     """
         
@@ -93,7 +96,7 @@ def fast_closest_pair(cluster_list):
         Divide and conquer method for computing distance between closest pair of points
         Running time is O(n * log(n))
         
-        horiz_order and vert_order are lists of indices for clusters
+        horiz_order and vert_order are lists of indices for clusterspair_distance(cluster_list, idx1, idx2)
         ordered horizontally and vertically
         
         Returns a tuple (distance, idx1, idx2) with idx1 < idx 2 where
@@ -110,7 +113,8 @@ def fast_closest_pair(cluster_list):
         else:
             # Number of points in each half
             # Should be: ceiling(x) = [x] is the smallest integer not less than x ([] should be chopped off at the bottom)
-            half_points = int(math.ceil(total / 2.0))
+            #half_points = int(math.ceil(total / 2.0))
+            half_points = len(horiz_order) / 2
 
             # Horizontal coordinate of the vertical dividing line
             mid = .5 * (cluster_list[horiz_order[half_points - 1]].horiz_center() + cluster_list[horiz_order[half_points]].horiz_center())
@@ -179,10 +183,22 @@ def hierarchical_clustering(cluster_list, num_clusters):
     Output: List of clusters whose length is num_clusters
     """
     
-    copy = list(dupe.copy() for dupe in cluster_list)
-    while cluster_list > num_clusters:
-        ci, cj = 
-    return []
+    all_clusters = list(cluster_list)
+
+    while len(all_clusters) > num_clusters:
+        # Get the clusters that are closest to eachother.
+        pair = fast_closest_pair(all_clusters)
+        cluster1 = all_clusters[pair[1]]
+        cluster2 = all_clusters[pair[2]]
+
+        # Merge clusters 
+        cluster1.merge_clusters(cluster2)
+
+        # Remove the leftover cluster
+        all_clusters.remove(cluster2)
+
+    return all_clusters
+ 
 
 
     
@@ -192,10 +208,109 @@ def kmeans_clustering(cluster_list, num_clusters, num_iterations):
     
     Input: List of clusters, number of clusters, number of iterations
     Output: List of clusters whose length is num_clusters
+    https://d396qusza40orc.cloudfront.net/algorithmicthink/AT-Homework3/KMeansClustering.jpg
     """
+   
+    total = len(cluster_list) 
     
-    # initialize k-means clusters to be initial clusters with largest populations
+    # Initialize k-means clusters to be initial clusters with largest populations.
+    # Make copies of the k-means clusters for safety.
+    k_centers = sorted(cluster_list, key = lambda cluster: cluster.total_population())[-num_clusters:]    
+    k_centers = list(dupe.copy() for dupe in k_centers)
 
-    return []
+    itr = 0
+    # for i = 1 to q do
+    while itr < num_iterations:
+        # Initialize k empty sets
+        k_sets = list(alg_cluster.Cluster(set([]), 0, 0, 0, 0) for empty_clust in k_centers)
+        
+        # for j = 0 to n - 1 do
+        for j_cluster in range(total):
+            closest_center = float('inf')
+            closest_idx = None
+            for idx in range(len(k_centers)):
+                dist = cluster_list[j_cluster].distance(k_centers[idx])
+                if dist < closest_center:
+                    closest_center = dist
+                    closest_idx = idx
+            
+            k_sets[closest_idx].merge_clusters(cluster_list[j_cluster])
+        
+        #Recompute cluster centers  
+        for center in range(len(k_centers)):
+            k_centers[center] = k_sets[center]
+        
+        itr += 1
+    return k_sets
 
 
+def gen_random_clusters(num_clusters):
+    """
+    Generates a list of clusters where each cluster in the list 
+    corresponds to one randomly generated point in a square with 
+    corners between 1 and -1.
+    """
+    def rand_num():
+        """
+        Returns a random number between 1 and -1.
+        """
+        return 2 * random.random() - 1
+    return list(alg_cluster.Cluster(set([]), rand_num(), rand_num(), 0, 0) for _ in range(num_clusters))
+
+
+
+def get_running_time(num_clust, f_type):
+    """
+    Get the running time for fast or slow closest pairs.
+    Computes a list of running times for the function being timed.
+    The list consists of running times from 2 - num_clust.
+    
+    Args:
+        num_clust: int, the number of clusters up to which should be timed.
+
+        f_type: which function to test? Should be 'fast' or 'slow'.
+    """
+    times = []
+    for num in range(2, num_clust):
+        clust = gen_random_clusters(num)
+        start = time.time()
+        if f_type == 'slow':
+            slow_closest_pairs(clust)
+        elif f_type == 'fast':
+            fast_closest_pair(clust)
+        times.append((time.time() - start) * 1000)
+    return times
+
+
+def plot_running_times():
+    """
+    Plots the running times for fast_closest_pair and slow_closest_pairs.
+    """
+    fast = get_running_time(200, 'fast')
+    slow = get_running_time(200, 'slow') 
+    #for item in fast:
+    plt.plot(fast, '-r', label='fast_closest_pair')
+    plt.plot(slow, '-b', label='slow_closest_pairs')
+    plt.legend(loc='upper right')
+    plt.title('Running times of slow_closest_pairs and fast_closest_pair')
+    plt.ylabel('Milliseconds')
+    plt.xlabel('Number of clusters')
+    plt.show()
+
+
+def compute_distortion(cluster_list, data_table):
+    """
+    Computes the distortion of a list of clusters.
+    Given a list of clusters L, the distortion of the clustering is the 
+    sum of the errors associated with its clusters.
+    distortion(L)=sum(C.union(L)error(C)) <--more or less...
+
+    Args:
+        cluster_list a list of cluster objects
+
+        data_table
+    """
+    return sum(cluster.cluster_error(data_table) for cluster in cluster_list)
+
+
+#plot_running_times()

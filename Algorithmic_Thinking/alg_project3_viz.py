@@ -14,10 +14,11 @@ import math
 import random
 import urllib2
 import alg_cluster
+import matplotlib.pyplot as plt
 
 # conditional imports
 if DESKTOP:
-    import alg_project3_solution      # desktop project solution
+    import alg_project3_template as alg_project3_solution # desktop project solution
     import alg_clusters_matplotlib
 else:
     #import userXX_XXXXXXXX as alg_project3_solution   # CodeSkulptor project solution
@@ -93,26 +94,95 @@ def run_example():
 
     Set DESKTOP = True/False to use either matplotlib or simplegui
     """
-    data_table = load_data_table(DATA_3108_URL)
+    data_table = load_data_table(DATA_896_URL)
     
     singleton_list = []
     for line in data_table:
         singleton_list.append(alg_cluster.Cluster(set([line[0]]), line[1], line[2], line[3], line[4]))
         
-    cluster_list = sequential_clustering(singleton_list, 15)    
-    print "Displaying", len(cluster_list), "sequential clusters"
+    #cluster_list = sequential_clustering(singleton_list, 15)    
+    #print "Displaying", len(cluster_list), "sequential clusters"
 
-    #cluster_list = alg_project3_solution.hierarchical_clustering(singleton_list, 9)
-    #print "Displaying", len(cluster_list), "hierarchical clusters"
+    cluster_list = alg_project3_solution.hierarchical_clustering(singleton_list, 50)
+    print "Displaying", len(cluster_list), "hierarchical clusters"
 
-    #cluster_list = alg_project3_solution.kmeans_clustering(singleton_list, 9, 5)   
+    #cluster_list = alg_project3_solution.kmeans_clustering(singleton_list, 20, 5)   
     #print "Displaying", len(cluster_list), "k-means clusters"
 
+    print 'Calculating distortion...'
+    print alg_project3_solution.compute_distortion(cluster_list, data_table)
+    
             
     # draw the clusters using matplotlib or simplegui
     if DESKTOP:
         alg_clusters_matplotlib.plot_clusters(data_table, cluster_list, True)
     else:
         alg_clusters_simplegui.PlotClusters(data_table, cluster_list)
+
+
+def get_distortions(start, end, data, alg):
+    """
+    Function computes the distortions for clusters ranging from 
+    start to end (inclusive).
+
+    Args:
+        start: integer, the number of clusterings to begin with.
+
+        end: integer, the number of clusterings to stop at.
+
+        data: which data set to use (111, 290, 896, 3108)
+
+        alg: string, the type of algorithm to test (k-smean or hierarchical)
+
+    Returns:
+        A list distortions for clusters ranging from start to end (inclusive).
+    """
+    lookup = {'111' : DATA_111_URL, 
+              '290' : DATA_290_URL ,
+              '896' : DATA_896_URL,
+              '3108' : DATA_3108_URL}
+
+    data_table = load_data_table(lookup[data])
     
+    singleton_list = []
+    for line in data_table:
+        singleton_list.append(alg_cluster.Cluster(set([line[0]]), line[1], line[2], line[3], line[4]))
+       
+    distortions = []
+    for num in range(start, end + 1):
+
+        if alg == 'kmeans':
+            cluster_list = alg_project3_solution.kmeans_clustering(singleton_list, num, 5)
+        elif alg == 'hierarchical':
+            cluster_list = alg_project3_solution.hierarchical_clustering(singleton_list, num)
+
+        distortions.append(alg_project3_solution.compute_distortion(cluster_list, data_table))
+        print 'Calculating distortion...'
+    return distortions 
+
+
+def plot_distortions(start, end, data, title='', xlabel='', ylabel=''):
+    """
+    Plots the distortions for k-means and hierarchical clustering methonds 
+    on clusterings from start number to end number.  
+    """
+    title = title + ' on the ' + data + ' data set' 
+    
+    kmeans = get_distortions(start, end, data, 'kmeans')
+    hierarchical = get_distortions(start, end, data, 'hierarchical')
+    plt.plot(kmeans, '-r', label='K-means')
+    plt.plot(hierarchical, '-b', label='Hierarchical')
+
+    # Add attributes to the plot
+    plt.legend(loc='upper right')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+
+
+#plot_distortions(6, 20, '111', title='Distortion of clusters', xlabel='Output clusters', ylabel='Distortions')
+#plot_distortions(6, 20, '290', title='Distortion of clusters', xlabel='Output clusters', ylabel='Distortions')
+#plot_distortions(6, 20, '896', title='Distortion of clusters', xlabel='Output clusters', ylabel='Distortions')
+
 run_example()
