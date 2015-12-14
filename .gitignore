@@ -4,3 +4,7 @@
 *.orig
 VuFind
 MMM_Savings_Rate
+*OCaml_MOOC_*
+*~
+*#*#
+*.#*
