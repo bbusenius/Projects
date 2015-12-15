@@ -58,6 +58,9 @@ let rec compute env op =
 
 
 (* Same as above but done better *)
-let rec compute_eff env = function fun_x -> lookup_function fun_x env
-compute_eff env;; 
+let rec compute_eff env = function -> 
+  | Value x -> x
+  | Op (x,y,z) -> lookup_function x env (compute env y) (compute env z);;
+
+
 

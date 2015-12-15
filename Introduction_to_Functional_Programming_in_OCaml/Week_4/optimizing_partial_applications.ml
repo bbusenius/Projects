@@ -40,6 +40,10 @@ let ccr = fun a -> fun b -> fun c -> fun s ->
 
 (* Fully optimize the above function 
 using partial function application *)
-
+let ccr = 
+  fun a -> let a = cos(a/.2.) in 
+  fun b -> let b = a *. (cos(b/.2.)) in 
+  fun c -> let c = 8. *. (b *. (cos(c/.2.))) in  
+  fun s -> s /. c ;;
 
 
