@@ -21,17 +21,20 @@ let rec sorted_simple cmp l =
   | _ -> true ;;
 
 
-(* Similar to above but uses List.fold *)
-let sorted cmp l = 
+(* Returns the same as above but uses List.fold *)
+let sorted cmp l =
   match l with
-  | h :: (b :: _ as t) -> let v = List.fold_left cmp 0 t in 
-    match v with
-    | -1 -> None
-    | 0|1 -> Some x in let nv = if v = Some 1 then true else false in nv
-  | _ -> true ;;
+  | [] -> true
+  | h::t-> 
+    let bool = List.fold_left 
+      (fun option e -> 
+	match option with
+	| Some(prev_elem) when (cmp prev_elem e) <= 0 -> Some(e)
+	| _ -> None) 
+      (Some(List.hd l))
+      l in if bool = None then false else true;;
 
 sorted (fun x y -> compare y x) [-1; 2; -2; 3; 4; -5; -5];;
-
 sorted compare [-4; 1; 4];;
 
 
