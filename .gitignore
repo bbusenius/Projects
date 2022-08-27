@@ -4,7 +4,11 @@
 *.orig
 VuFind
 MMM_Savings_Rate
+FI-API*
+FI*
+FI-Widgets*
 *OCaml_MOOC_*
 *~
 *#*#
 *.#*
+/*
